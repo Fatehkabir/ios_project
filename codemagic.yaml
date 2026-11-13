@@ -53,35 +53,11 @@ workflows:
           PLIST_PATH="$CM_BUILD_DIR/EmergencyReady/GoogleService-Info.plist"
           if [ -n "$GOOGLE_SERVICE_INFO_PLIST" ]; then
             echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > "$PLIST_PATH"
-            echo "GoogleService-Info.plist injected from environment variable."
+            echo "Real GoogleService-Info.plist injected from environment variable."
           else
-            echo "WARNING: GOOGLE_SERVICE_INFO_PLIST env var not set. Writing stub plist."
-            python3 - <<'PYEOF'
-import os
-path = os.path.join(os.environ["CM_BUILD_DIR"], "EmergencyReady", "GoogleService-Info.plist")
-content = """<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>API_KEY</key>              <string>STUB</string>
-  <key>GCM_SENDER_ID</key>        <string>000000000000</string>
-  <key>PLIST_VERSION</key>        <string>1</string>
-  <key>BUNDLE_ID</key>            <string>com.emergencyready.app</string>
-  <key>PROJECT_ID</key>           <string>emergencyready-stub</string>
-  <key>STORAGE_BUCKET</key>       <string>emergencyready-stub.appspot.com</string>
-  <key>IS_ADS_ENABLED</key>       <false/>
-  <key>IS_ANALYTICS_ENABLED</key> <false/>
-  <key>IS_APPINVITE_ENABLED</key> <true/>
-  <key>IS_GCM_ENABLED</key>       <true/>
-  <key>IS_SIGNIN_ENABLED</key>    <true/>
-  <key>GOOGLE_APP_ID</key>        <string>1:000000000000:ios:0000000000000000000000</string>
-</dict>
-</plist>"""
-with open(path, "w") as f:
-    f.write(content)
-print("Stub GoogleService-Info.plist written to", path)
-PYEOF
+            echo "No GOOGLE_SERVICE_INFO_PLIST env var set."
+            echo "Using the stub GoogleService-Info.plist already present in the repo."
+            echo "Firebase features will not work, but the build will compile."
           fi
 
       - name: Resolve Swift Package dependencies
