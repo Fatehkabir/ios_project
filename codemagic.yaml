@@ -1,0 +1,108 @@
+workflows:
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 1. VNC / Manual Setup Session
+  #    Start this workflow when you need to SSH or screen-share into the Mac
+  #    build machine to perform one-time setup (e.g. add GoogleService-Info.plist,
+  #    sign in to Xcode, install a tool).  The machine idles for 30 minutes then
+  #    the build ends automatically.
+  # ─────────────────────────────────────────────────────────────────────────────
+  manual-setup-session:
+    name: Manual Setup Session (VNC)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      xcode: latest
+    scripts:
+      - name: Hold the machine open for manual setup via VNC
+        script: |
+          echo "Machine is up. Connect via VNC now and do your manual setup."
+          echo "This will idle for 30 minutes, then the build ends on its own."
+          sleep 1800
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 2. iOS Simulator Build  (no code signing needed)
+  #    Builds the .app for the iOS Simulator so you can verify the project
+  #    compiles cleanly on a real Mac / Xcode environment without a certificate.
+  #
+  #    HOW TO TRIGGER:
+  #      Codemagic dashboard → Start new build → choose this workflow.
+  #
+  #    IMPORTANT – GoogleService-Info.plist:
+  #      This file contains Firebase secrets and must NOT be committed to git.
+  #      Before running this workflow, either:
+  #        a) Add it as a Codemagic "Environment file" variable named
+  #           GOOGLE_SERVICE_INFO_PLIST (base-64 encoded), OR
+  #        b) Run the manual-setup-session first and place the file manually.
+  #      The script below handles option (a) automatically.
+  # ─────────────────────────────────────────────────────────────────────────────
+  simulator-native-ios:
+    name: EmergencyReady iOS Simulator Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      xcode: latest
+      vars:
+        XCODE_PROJECT: "EmergencyReady.xcodeproj"
+        XCODE_SCHEME: "EmergencyReady"
+        # Optional: set GOOGLE_SERVICE_INFO_PLIST in Codemagic as a secret
+        # file variable (base-64). The script below decodes and places it.
+    scripts:
+      - name: Inject GoogleService-Info.plist (if provided as env variable)
+        script: |
+          if [ -n "$GOOGLE_SERVICE_INFO_PLIST" ]; then
+            echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode \
+              > "$CM_BUILD_DIR/EmergencyReady/GoogleService-Info.plist"
+            echo "GoogleService-Info.plist injected from environment variable."
+          else
+            echo "WARNING: GOOGLE_SERVICE_INFO_PLIST env var not set."
+            echo "Creating a stub plist so the build does not crash at link time."
+            cat > "$CM_BUILD_DIR/EmergencyReady/GoogleService-Info.plist" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>API_KEY</key>             <string>STUB</string>
+  <key>GCM_SENDER_ID</key>       <string>000000000000</string>
+  <key>PLIST_VERSION</key>       <string>1</string>
+  <key>BUNDLE_ID</key>           <string>com.emergencyready.app</string>
+  <key>PROJECT_ID</key>          <string>emergencyready-stub</string>
+  <key>STORAGE_BUCKET</key>      <string>emergencyready-stub.appspot.com</string>
+  <key>IS_ADS_ENABLED</key>      <false/>
+  <key>IS_ANALYTICS_ENABLED</key><false/>
+  <key>IS_APPINVITE_ENABLED</key><true/>
+  <key>IS_GCM_ENABLED</key>      <true/>
+  <key>IS_SIGNIN_ENABLED</key>   <true/>
+  <key>GOOGLE_APP_ID</key>       <string>1:000000000000:ios:0000000000000000000000</string>
+</dict>
+</plist>
+PLIST
+            echo "Stub GoogleService-Info.plist created."
+          fi
+
+      - name: Resolve Swift Package dependencies
+        script: |
+          xcodebuild -resolvePackageDependencies \
+            -project "$XCODE_PROJECT" \
+            -scheme  "$XCODE_SCHEME"
+
+      - name: Build the .app for iOS Simulator (no code signing needed)
+        script: |
+          xcodebuild build \
+            -project      "$XCODE_PROJECT"  \
+            -scheme       "$XCODE_SCHEME"   \
+            -sdk          iphonesimulator   \
+            -destination  'platform=iOS Simulator,name=iPhone 15 Pro' \
+            -configuration Debug            \
+            CODE_SIGN_IDENTITY=""           \
+            CODE_SIGNING_REQUIRED=NO        \
+            CODE_SIGNING_ALLOWED=NO         \
+            | tee /tmp/xcodebuild.log       \
+            | xcpretty --color || (cat /tmp/xcodebuild.log && exit 1)
+
+    artifacts:
+      # Raw xcodebuild log (always saved, useful when xcpretty suppresses details)
+      - /tmp/xcodebuild.log
+      # The compiled .app bundle
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app

@@ -1,0 +1,47 @@
+# ── Xcode ─────────────────────────────────────────────────────────────────────
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# ── Swift Package Manager ──────────────────────────────────────────────────────
+.build/
+.swiftpm/
+Package.resolved           # keep if you want reproducible builds, remove to allow updates
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ── Firebase secrets ──────────────────────────────────────────────────────────
+# The stub GoogleService-Info.plist IS committed (it contains no real secrets).
+# REPLACE it with your real one from Firebase Console before running the app.
+# If you have a real plist locally, name it GoogleService-Info.real.plist
+# and it will stay ignored:
+GoogleService-Info.real.plist
+
+# ── Environment / editor ──────────────────────────────────────────────────────
+.env
+.vscode/
+.idea/
+
+# ── Build artefacts ───────────────────────────────────────────────────────────
+*.app
+*.ipa
+*.xcarchive

@@ -1,0 +1,48 @@
+rules_version = '2';
+
+// Paste this into: Firebase Console -> Firestore Database -> Rules -> Publish
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // True only when the person is logged in AND is the owner of this users/{userId} path.
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+
+      // users/{uid} itself (holds the "checklistSeeded" flag)
+      allow read, write: if isOwner(userId);
+
+      match /contacts/{contactId} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 100
+          && request.resource.data.phone is string
+          && request.resource.data.phone.size() > 0
+          && request.resource.data.phone.size() <= 30
+          && request.resource.data.relationship is string
+          && request.resource.data.relationship.size() <= 60;
+      }
+
+      match /favorites/{guideId} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+          && request.resource.data.guideId is string;
+      }
+
+      match /checklistItems/{itemId} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+          && request.resource.data.title is string
+          && request.resource.data.title.size() > 0
+          && request.resource.data.title.size() <= 100
+          && request.resource.data.isCompleted is bool;
+      }
+    }
+
+    // Everything else is denied automatically.
+  }
+}
