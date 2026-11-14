@@ -87,6 +87,7 @@
 		BB0001000000000000000036 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BB0001000000000000000037 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BB0001000000000000000038 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB0001000000000000000039 /* EmergencyReady.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EmergencyReady.entitlements; sourceTree = "<group>"; };
 		DD0001000000000000000001 /* EmergencyReady.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmergencyReady.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -109,6 +110,7 @@
 				BB0001000000000000000001 /* EmergencyReadyApp.swift */,
 				BB0001000000000000000002 /* Theme.swift */,
 				BB0001000000000000000038 /* Info.plist */,
+				BB0001000000000000000039 /* EmergencyReady.entitlements */,
 				BB0001000000000000000037 /* GoogleService-Info.plist */,
 				FF0001000000000000000002 /* Models */,
 				FF0001000000000000000003 /* Services */,
