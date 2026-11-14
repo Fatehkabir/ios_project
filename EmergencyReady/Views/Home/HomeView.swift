@@ -9,6 +9,9 @@ struct HomeView: View {
 
     @State private var randomTip: SafetyTip? = nil
     @State private var showLogoutConfirmation = false
+    @State private var showCheckInSheet = false
+    @StateObject private var weatherService = WeatherAlertService()
+    @ObservedObject private var locationService = LocationService.shared
 
     // "kabir@mail.com" -> "kabir"
     private var displayName: String {
@@ -37,6 +40,8 @@ struct HomeView: View {
 
                 VStack(alignment: .leading, spacing: 22) {
                     searchBar
+                    quickEmergencyActions
+                    weatherAlertsSection
                     emergencyNotice
 
                     if data.isLoading {
@@ -58,6 +63,17 @@ struct HomeView: View {
                             titleVisibility: .visible) {
             Button("Log Out", role: .destructive) { auth.logout() }
             Button("Cancel", role: .cancel) { }
+        }
+        .sheet(isPresented: $showCheckInSheet) {
+            CheckInView()
+        }
+        .onAppear {
+            locationService.startSingleUpdate()
+        }
+        .onChange(of: locationService.lastLocation) { newLoc in
+            if let loc = newLoc {
+                weatherService.fetchAlerts(for: loc)
+            }
         }
     }
 
@@ -98,7 +114,6 @@ struct HomeView: View {
         .background(Theme.navy.ignoresSafeArea(edges: .top))
     }
 
-    // Looks like a search box but is a NavigationLink to the Search screen.
     private var searchBar: some View {
         NavigationLink {
             SearchView()
@@ -116,6 +131,137 @@ struct HomeView: View {
             .shadow(color: Color.black.opacity(0.06), radius: 6, x: 0, y: 2)
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - Quick Emergency Actions (Nearby Hospital / Police & I'm Safe)
+    private var quickEmergencyActions: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 12) {
+                Button {
+                    openAppleMapsSearch(query: "hospital")
+                } label: {
+                    HStack {
+                        Image(systemName: "cross.fill")
+                            .font(.headline)
+                        Text("Find Hospital")
+                            .font(.subheadline.bold())
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Theme.red)
+                    .cornerRadius(Theme.cornerRadius)
+                }
+
+                Button {
+                    openAppleMapsSearch(query: "police station")
+                } label: {
+                    HStack {
+                        Image(systemName: "shield.lefthalf.filled")
+                            .font(.headline)
+                        Text("Find Police")
+                            .font(.subheadline.bold())
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Theme.navyLight)
+                    .cornerRadius(Theme.cornerRadius)
+                }
+            }
+
+            Button {
+                showCheckInSheet = true
+            } label: {
+                HStack {
+                    Image(systemName: "checkmark.shield.fill")
+                        .foregroundColor(Theme.green)
+                    Text("I'm Safe / Live Location Check-In")
+                        .font(.subheadline.bold())
+                        .foregroundColor(Theme.navy)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption.bold())
+                        .foregroundColor(Theme.textSecondary)
+                }
+                .padding(14)
+                .background(Theme.card)
+                .cornerRadius(Theme.cornerRadius)
+                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private func openAppleMapsSearch(query: String) {
+        let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query
+        if let location = locationService.lastLocation {
+            let lat = location.coordinate.latitude
+            let lon = location.coordinate.longitude
+            if let url = URL(string: "http://maps.apple.com/?q=\(encoded)&sll=\(lat),\(lon)") {
+                UIApplication.shared.open(url)
+                return
+            }
+        }
+        if let url = URL(string: "http://maps.apple.com/?q=\(encoded)") {
+            UIApplication.shared.open(url)
+        }
+    }
+
+    // MARK: - Local Disaster & Weather Alerts
+    private var weatherAlertsSection: some View {
+        Group {
+            if !weatherService.alerts.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(Theme.red)
+                        Text("Active Local Hazard Alerts")
+                            .font(.headline)
+                            .foregroundColor(Theme.navy)
+                        Spacer()
+                    }
+
+                    ForEach(weatherService.alerts) { alert in
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text(alert.event)
+                                    .font(.subheadline.bold())
+                                    .foregroundColor(Theme.red)
+                                Spacer()
+                                Text(alert.severity)
+                                    .font(.caption2.bold())
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(Theme.red.opacity(0.15))
+                                    .cornerRadius(6)
+                                    .foregroundColor(Theme.red)
+                            }
+
+                            Text(alert.headline)
+                                .font(.footnote)
+                                .foregroundColor(Theme.navy)
+
+                            if let instruction = alert.instruction, !instruction.isEmpty {
+                                Text(instruction)
+                                    .font(.caption)
+                                    .foregroundColor(Theme.textSecondary)
+                                    .padding(.top, 2)
+                            }
+                        }
+                        .padding(12)
+                        .background(Theme.red.opacity(0.06))
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Theme.red.opacity(0.2), lineWidth: 1)
+                        )
+                    }
+                }
+                .padding(14)
+                .cardStyle()
+            }
+        }
     }
 
     private var emergencyNotice: some View {

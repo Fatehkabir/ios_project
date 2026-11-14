@@ -226,6 +226,41 @@ class FirestoreService: ObservableObject {
         }
     }
 
+    // MARK: - Safe Status & Live Location Sharing
+
+    func updateSafeStatus(isSafe: Bool, message: String = "") {
+        guard let userId = userId else { return notLoggedIn() }
+        let data: [String: Any] = [
+            "isSafe": isSafe,
+            "statusMessage": message,
+            "updatedAt": Date().timeIntervalSince1970
+        ]
+        db.collection("users").document(userId)
+            .collection("safetyStatus").document("current")
+            .setData(data, merge: true) { [weak self] error in
+                if let error = error { self?.show(error) }
+            }
+    }
+
+    func updateLiveLocation(latitude: Double, longitude: Double) {
+        guard let userId = userId else { return }
+        let data: [String: Any] = [
+            "latitude": latitude,
+            "longitude": longitude,
+            "updatedAt": Date().timeIntervalSince1970
+        ]
+        db.collection("users").document(userId)
+            .collection("liveLocation").document("current")
+            .setData(data, merge: true)
+    }
+
+    func clearLiveLocation() {
+        guard let userId = userId else { return }
+        db.collection("users").document(userId)
+            .collection("liveLocation").document("current")
+            .delete()
+    }
+
     // MARK: - Errors
 
     private func notLoggedIn() {

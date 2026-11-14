@@ -41,6 +41,9 @@
 		AA0001000000000000000032 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000032 /* HomeView.swift */; };
 		AA0001000000000000000033 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000033 /* SearchView.swift */; };
 		AA0001000000000000000034 /* SafetyTipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000034 /* SafetyTipsView.swift */; };
+		AA0001000000000000000040 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000040 /* LocationService.swift */; };
+		AA0001000000000000000041 /* WeatherAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000041 /* WeatherAlertService.swift */; };
+		AA0001000000000000000042 /* CheckInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000042 /* CheckInView.swift */; };
 		AA0001000000000000000035 /* EmergencyData.json in Resources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000035 /* EmergencyData.json */; };
 		AA0001000000000000000036 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000036 /* Assets.xcassets */; };
 		AA0001000000000000000037 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000037 /* GoogleService-Info.plist */; };
@@ -88,6 +91,9 @@
 		BB0001000000000000000037 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BB0001000000000000000038 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BB0001000000000000000039 /* EmergencyReady.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EmergencyReady.entitlements; sourceTree = "<group>"; };
+		BB0001000000000000000040 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		BB0001000000000000000041 /* WeatherAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherAlertService.swift; sourceTree = "<group>"; };
+		BB0001000000000000000042 /* CheckInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInView.swift; sourceTree = "<group>"; };
 		DD0001000000000000000001 /* EmergencyReady.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmergencyReady.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -141,6 +147,8 @@
 				BB0001000000000000000010 /* FirebaseAuthService.swift */,
 				BB0001000000000000000011 /* FirestoreService.swift */,
 				BB0001000000000000000012 /* Validation.swift */,
+				BB0001000000000000000040 /* LocationService.swift */,
+				BB0001000000000000000041 /* WeatherAlertService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -199,6 +207,7 @@
 				BB0001000000000000000023 /* IconBadge.swift */,
 				BB0001000000000000000024 /* StateViews.swift */,
 				BB0001000000000000000025 /* TipCard.swift */,
+				BB0001000000000000000042 /* CheckInView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -382,6 +391,9 @@
 				AA0001000000000000000032 /* HomeView.swift in Sources */,
 				AA0001000000000000000033 /* SearchView.swift in Sources */,
 				AA0001000000000000000034 /* SafetyTipsView.swift in Sources */,
+				AA0001000000000000000040 /* LocationService.swift in Sources */,
+				AA0001000000000000000041 /* WeatherAlertService.swift in Sources */,
+				AA0001000000000000000042 /* CheckInView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

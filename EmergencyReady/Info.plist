@@ -27,6 +27,14 @@
 	</dict>
 	<key>UILaunchScreen</key>
 	<dict/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>EmergencyReady uses your location to find nearby hospitals, police stations, and local weather alerts.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>EmergencyReady uses your location in the background to share live safety updates with your emergency contacts until you mark yourself safe.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

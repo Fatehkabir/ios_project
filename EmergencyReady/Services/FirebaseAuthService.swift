@@ -11,6 +11,14 @@ class FirebaseAuthService: ObservableObject {
     private var listenerHandle: AuthStateDidChangeListenerHandle?
 
     init() {
+        #if targetEnvironment(simulator)
+        do {
+            try Auth.auth().useUserAccessGroup(nil)
+        } catch {
+            print("Simulator keychain access group note: \(error)")
+        }
+        #endif
+
         // Firebase tells us whenever the login state changes (login, logout, app restart).
         listenerHandle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             self?.currentUser = user
