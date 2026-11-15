@@ -35,6 +35,12 @@ class FirebaseAuthService: ObservableObject {
     var userId: String? { currentUser?.uid }
     var userEmail: String { currentUser?.email ?? "" }
 
+    // MARK: - Admin Role Check
+    var isAdmin: Bool {
+        let email = userEmail.lowercased().trimmingCharacters(in: .whitespaces)
+        return email.contains("admin") || email.hasPrefix("admin@") || email == "admin@emergencyready.app"
+    }
+
     // MARK: - Register
     func register(email: String, password: String) {
         errorMessage = nil

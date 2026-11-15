@@ -9,7 +9,7 @@ struct HomeView: View {
 
     @State private var randomTip: SafetyTip? = nil
     @State private var showLogoutConfirmation = false
-    @State private var showCheckInSheet = false
+    @State private var showAdminPanel = false
     @StateObject private var weatherService = WeatherAlertService()
     @ObservedObject private var locationService = LocationService.shared
 
@@ -64,8 +64,8 @@ struct HomeView: View {
             Button("Log Out", role: .destructive) { auth.logout() }
             Button("Cancel", role: .cancel) { }
         }
-        .sheet(isPresented: $showCheckInSheet) {
-            CheckInView()
+        .sheet(isPresented: $showAdminPanel) {
+            AdminDashboardView()
         }
         .onAppear {
             locationService.startSingleUpdate()
@@ -96,6 +96,13 @@ struct HomeView: View {
 
             Menu {
                 Text(auth.userEmail)
+                if auth.isAdmin {
+                    Button {
+                        showAdminPanel = true
+                    } label: {
+                        Label("Admin Control Panel", systemImage: "lock.shield.fill")
+                    }
+                }
                 Button(role: .destructive) {
                     showLogoutConfirmation = true
                 } label: {
@@ -133,63 +140,40 @@ struct HomeView: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - Quick Emergency Actions (Nearby Hospital / Police & I'm Safe)
+    // MARK: - Quick Emergency Actions (Nearby Hospital / Police)
     private var quickEmergencyActions: some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 12) {
-                Button {
-                    openAppleMapsSearch(query: "hospital")
-                } label: {
-                    HStack {
-                        Image(systemName: "cross.fill")
-                            .font(.headline)
-                        Text("Find Hospital")
-                            .font(.subheadline.bold())
-                    }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(Theme.red)
-                    .cornerRadius(Theme.cornerRadius)
+        HStack(spacing: 12) {
+            Button {
+                openAppleMapsSearch(query: "hospital")
+            } label: {
+                HStack {
+                    Image(systemName: "cross.fill")
+                        .font(.headline)
+                    Text("Find Hospital")
+                        .font(.subheadline.bold())
                 }
-
-                Button {
-                    openAppleMapsSearch(query: "police station")
-                } label: {
-                    HStack {
-                        Image(systemName: "shield.lefthalf.filled")
-                            .font(.headline)
-                        Text("Find Police")
-                            .font(.subheadline.bold())
-                    }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(Theme.navyLight)
-                    .cornerRadius(Theme.cornerRadius)
-                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Theme.red)
+                .cornerRadius(Theme.cornerRadius)
             }
 
             Button {
-                showCheckInSheet = true
+                openAppleMapsSearch(query: "police station")
             } label: {
                 HStack {
-                    Image(systemName: "checkmark.shield.fill")
-                        .foregroundColor(Theme.green)
-                    Text("I'm Safe / Live Location Check-In")
+                    Image(systemName: "shield.lefthalf.filled")
+                        .font(.headline)
+                    Text("Find Police")
                         .font(.subheadline.bold())
-                        .foregroundColor(Theme.navy)
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption.bold())
-                        .foregroundColor(Theme.textSecondary)
                 }
-                .padding(14)
-                .background(Theme.card)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Theme.navyLight)
                 .cornerRadius(Theme.cornerRadius)
-                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
             }
-            .buttonStyle(.plain)
         }
     }
 

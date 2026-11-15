@@ -84,4 +84,22 @@ class EmergencyDataService: ObservableObject {
         }
         return (matchedCategories, matchedGuides)
     }
+
+    // MARK: - Admin Features (Add / Update / Delete Guides & Tips)
+
+    func addGuide(_ guide: EmergencyGuide) {
+        guides.append(guide)
+    }
+
+    func deleteGuide(withId id: String) {
+        guides.removeAll { $0.id == id }
+    }
+
+    func addTip(_ tip: SafetyTip) {
+        tips.append(tip)
+    }
+
+    func deleteTip(withId id: String) {
+        tips.removeAll { $0.id == id }
+    }
 }

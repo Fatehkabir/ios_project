@@ -9,9 +9,6 @@ class LocationService: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     @Published var lastLocation: CLLocation? = nil
     @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
-    @Published var isSharingLiveLocation = false
-
-    var onLocationUpdate: ((CLLocation) -> Void)? = nil
 
     override init() {
         super.init()
@@ -25,30 +22,11 @@ class LocationService: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.requestWhenInUseAuthorization()
     }
 
-    func requestAlways() {
-        manager.requestAlwaysAuthorization()
-    }
-
     func startSingleUpdate() {
         if authorizationStatus == .notDetermined {
             requestWhenInUse()
         }
         manager.startUpdatingLocation()
-    }
-
-    func startLiveSharing(onUpdate: @escaping (CLLocation) -> Void) {
-        self.onLocationUpdate = onUpdate
-        self.isSharingLiveLocation = true
-        manager.allowsBackgroundLocationUpdates = true
-        manager.pausesLocationUpdatesAutomatically = false
-        manager.startUpdatingLocation()
-    }
-
-    func stopLiveSharing() {
-        self.isSharingLiveLocation = false
-        self.onLocationUpdate = nil
-        manager.allowsBackgroundLocationUpdates = false
-        manager.stopUpdatingLocation()
     }
 
     // MARK: - CLLocationManagerDelegate
@@ -65,9 +43,6 @@ class LocationService: NSObject, ObservableObject, CLLocationManagerDelegate {
         guard let location = locations.last else { return }
         DispatchQueue.main.async {
             self.lastLocation = location
-            if self.isSharingLiveLocation {
-                self.onLocationUpdate?(location)
-            }
         }
     }
 
