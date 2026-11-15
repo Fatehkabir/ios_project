@@ -91,12 +91,24 @@ class EmergencyDataService: ObservableObject {
         guides.append(guide)
     }
 
+    func updateGuide(_ guide: EmergencyGuide) {
+        if let index = guides.firstIndex(where: { $0.id == guide.id }) {
+            guides[index] = guide
+        }
+    }
+
     func deleteGuide(withId id: String) {
         guides.removeAll { $0.id == id }
     }
 
     func addTip(_ tip: SafetyTip) {
         tips.append(tip)
+    }
+
+    func updateTip(_ tip: SafetyTip) {
+        if let index = tips.firstIndex(where: { $0.id == tip.id }) {
+            tips[index] = tip
+        }
     }
 
     func deleteTip(withId id: String) {
