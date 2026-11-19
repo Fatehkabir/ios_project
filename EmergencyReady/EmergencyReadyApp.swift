@@ -20,6 +20,7 @@ struct EmergencyReadyApp: App {
     @StateObject private var firestoreService = FirestoreService()
     @StateObject private var disasterService = DisasterAlertService()
     @StateObject private var checklistService = ChecklistService()
+    @StateObject private var meshService = MeshSOSService()
 
     var body: some Scene {
         WindowGroup {
@@ -29,6 +30,7 @@ struct EmergencyReadyApp: App {
                 .environmentObject(firestoreService)
                 .environmentObject(disasterService)
                 .environmentObject(checklistService)
+                .environmentObject(meshService)
         }
     }
 }

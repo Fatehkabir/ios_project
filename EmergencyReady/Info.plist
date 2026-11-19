@@ -29,6 +29,13 @@
 	<dict/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>EmergencyReady uses your location to find nearby hospitals, police stations, and local weather alerts.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>EmergencyReady uses local Wi-Fi and Bluetooth to discover and transmit peer-to-peer offline SOS emergency beacons during natural disasters.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_er-mesh-sos._tcp</string>
+		<string>_er-mesh-sos._udp</string>
+	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

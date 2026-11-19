@@ -46,6 +46,9 @@
 		AA0001000000000000000040 /* ChecklistService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000040 /* ChecklistService.swift */; };
 		AA0001000000000000000041 /* DisasterAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000041 /* DisasterAlertService.swift */; };
 		AA0001000000000000000042 /* AdminDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000042 /* AdminDashboardView.swift */; };
+		AA0001000000000000000070 /* MeshSOSBeacon.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000070 /* MeshSOSBeacon.swift */; };
+		AA0001000000000000000071 /* MeshSOSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000071 /* MeshSOSService.swift */; };
+		AA0001000000000000000072 /* MeshSOSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000072 /* MeshSOSView.swift */; };
 		AA0001000000000000000035 /* EmergencyData.json in Resources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000035 /* EmergencyData.json */; };
 		AA0001000000000000000036 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000036 /* Assets.xcassets */; };
 		AA0001000000000000000037 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000037 /* GoogleService-Info.plist */; };
@@ -98,6 +101,9 @@
 		BB0001000000000000000040 /* ChecklistService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistService.swift; sourceTree = "<group>"; };
 		BB0001000000000000000041 /* DisasterAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisasterAlertService.swift; sourceTree = "<group>"; };
 		BB0001000000000000000042 /* AdminDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDashboardView.swift; sourceTree = "<group>"; };
+		BB0001000000000000000070 /* MeshSOSBeacon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshSOSBeacon.swift; sourceTree = "<group>"; };
+		BB0001000000000000000071 /* MeshSOSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshSOSService.swift; sourceTree = "<group>"; };
+		BB0001000000000000000072 /* MeshSOSView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshSOSView.swift; sourceTree = "<group>"; };
 		DD0001000000000000000001 /* EmergencyReady.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmergencyReady.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -135,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				BB0001000000000000000050 /* DisasterAlert.swift */,
+				BB0001000000000000000070 /* MeshSOSBeacon.swift */,
 				BB0001000000000000000003 /* ChecklistItem.swift */,
 				BB0001000000000000000004 /* EmergencyCategory.swift */,
 				BB0001000000000000000005 /* EmergencyContact.swift */,
@@ -154,6 +161,7 @@
 				BB0001000000000000000012 /* Validation.swift */,
 				BB0001000000000000000040 /* ChecklistService.swift */,
 				BB0001000000000000000041 /* DisasterAlertService.swift */,
+				BB0001000000000000000071 /* MeshSOSService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -214,6 +222,7 @@
 				BB0001000000000000000024 /* StateViews.swift */,
 				BB0001000000000000000025 /* TipCard.swift */,
 				BB0001000000000000000042 /* AdminDashboardView.swift */,
+				BB0001000000000000000072 /* MeshSOSView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -402,6 +411,9 @@
 				AA0001000000000000000040 /* ChecklistService.swift in Sources */,
 				AA0001000000000000000041 /* DisasterAlertService.swift in Sources */,
 				AA0001000000000000000042 /* AdminDashboardView.swift in Sources */,
+				AA0001000000000000000070 /* MeshSOSBeacon.swift in Sources */,
+				AA0001000000000000000071 /* MeshSOSService.swift in Sources */,
+				AA0001000000000000000072 /* MeshSOSView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

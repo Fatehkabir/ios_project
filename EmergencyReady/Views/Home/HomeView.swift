@@ -11,6 +11,7 @@ struct HomeView: View {
     @State private var showLogoutConfirmation = false
     @State private var showAdminPanel = false
     @State private var showProfileSheet = false
+    @State private var showMeshSOSSheet = false
     @State private var selectedRegionFilter = "All"
 
     private var dailyTip: SafetyTip? {
@@ -48,6 +49,9 @@ struct HomeView: View {
                     // 2. SOS Emergency Call Button
                     SOSButton(number: auth.emergencyNumber)
 
+                    // 2b. Offline Peer-to-Peer SOS Mesh Banner
+                    meshSOSBanner
+
                     // 3. Search Bar
                     searchBar
 
@@ -78,6 +82,9 @@ struct HomeView: View {
         }
         .sheet(isPresented: $showProfileSheet) {
             ProfileView()
+        }
+        .sheet(isPresented: $showMeshSOSSheet) {
+            MeshSOSView()
         }
     }
 
@@ -213,6 +220,57 @@ struct HomeView: View {
                     Capsule()
                         .stroke(selectedRegionFilter == tag ? Theme.navy : Theme.textSecondary.opacity(0.3), lineWidth: 1)
                 )
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Offline SOS Mesh Banner
+    private var meshSOSBanner: some View {
+        Button {
+            showMeshSOSSheet = true
+        } label: {
+            HStack(spacing: 14) {
+                ZStack {
+                    Circle()
+                        .fill(Theme.danger.opacity(0.12))
+                        .frame(width: 44, height: 44)
+                    Image(systemName: "antenna.radiowaves.left.and.right")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(Theme.danger)
+                }
+
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack {
+                        Text("Offline Peer-to-Peer SOS Mesh")
+                            .font(.subheadline.bold())
+                            .foregroundColor(Theme.navy)
+                        Spacer()
+                        Text("NO CELL TOWER")
+                            .font(.system(size: 9, weight: .black))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Theme.orange.opacity(0.15))
+                            .foregroundColor(Theme.orange)
+                            .cornerRadius(4)
+                    }
+
+                    Text("Broadcast & scan for distress signals via direct Wi-Fi/Bluetooth")
+                        .font(.caption2)
+                        .foregroundColor(Theme.textSecondary)
+                }
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.bold())
+                    .foregroundColor(Theme.textSecondary)
+            }
+            .padding(14)
+            .background(Color.white)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Theme.danger.opacity(0.2), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
         }
         .buttonStyle(.plain)
     }
