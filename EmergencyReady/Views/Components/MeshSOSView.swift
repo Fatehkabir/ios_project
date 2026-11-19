@@ -57,7 +57,7 @@ struct MeshSOSView: View {
         HStack(spacing: 14) {
             Image(systemName: "antenna.radiowaves.left.and.right")
                 .font(.system(size: 32))
-                .foregroundColor(Theme.primary)
+                .foregroundColor(Theme.orange)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text("Peer-to-Peer Disaster Mesh")
@@ -85,15 +85,15 @@ struct MeshSOSView: View {
                 if meshService.isAdvertising {
                     HStack(spacing: 6) {
                         Circle()
-                            .fill(Theme.danger)
+                            .fill(Theme.red)
                             .frame(width: 8, height: 8)
                         Text("Broadcasting")
                             .font(.caption.bold())
-                            .foregroundColor(Theme.danger)
+                            .foregroundColor(Theme.red)
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
-                    .background(Theme.danger.opacity(0.1))
+                    .background(Theme.red.opacity(0.1))
                     .cornerRadius(12)
                 }
             }
@@ -102,10 +102,10 @@ struct MeshSOSView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(Theme.danger)
+                            .foregroundColor(Theme.red)
                         Text(beacon.emergencyStatus)
                             .font(.subheadline.bold())
-                            .foregroundColor(Theme.danger)
+                            .foregroundColor(Theme.red)
                     }
                     Text("Name: \(beacon.senderName) • \(beacon.region)")
                         .font(.footnote)
@@ -128,15 +128,15 @@ struct MeshSOSView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(Theme.danger)
+                        .background(Theme.red)
                         .cornerRadius(10)
                     }
                     .padding(.top, 4)
                 }
                 .padding()
-                .background(Theme.danger.opacity(0.05))
+                .background(Theme.red.opacity(0.05))
                 .cornerRadius(12)
-                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.danger.opacity(0.3), lineWidth: 1))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.red.opacity(0.3), lineWidth: 1))
             } else {
                 VStack(spacing: 12) {
                     Text("Select your current emergency condition to broadcast to nearby rescuers:")
@@ -177,7 +177,7 @@ struct MeshSOSView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 13)
-                        .background(Theme.danger)
+                        .background(Theme.red)
                         .cornerRadius(10)
                     }
                 }
@@ -211,10 +211,10 @@ struct MeshSOSView: View {
                         Text(meshService.isScanning ? "Scanning..." : "Scan")
                     }
                     .font(.caption.bold())
-                    .foregroundColor(Theme.primary)
+                    .foregroundColor(Theme.orange)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
-                    .background(Theme.primary.opacity(0.1))
+                    .background(Theme.orange.opacity(0.1))
                     .cornerRadius(8)
                 }
             }
@@ -243,10 +243,10 @@ struct MeshSOSView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Image(systemName: "exclamationmark.circle.fill")
-                                    .foregroundColor(Theme.danger)
+                                    .foregroundColor(Theme.red)
                                 Text(beacon.emergencyStatus)
                                     .font(.subheadline.bold())
-                                    .foregroundColor(Theme.danger)
+                                    .foregroundColor(Theme.red)
 
                                 Spacer()
 

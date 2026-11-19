@@ -232,11 +232,11 @@ struct HomeView: View {
             HStack(spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(Theme.danger.opacity(0.12))
+                        .fill(Theme.red.opacity(0.12))
                         .frame(width: 44, height: 44)
                     Image(systemName: "antenna.radiowaves.left.and.right")
                         .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(Theme.danger)
+                        .foregroundColor(Theme.red)
                 }
 
                 VStack(alignment: .leading, spacing: 3) {
@@ -268,7 +268,7 @@ struct HomeView: View {
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Theme.danger.opacity(0.2), lineWidth: 1)
+                    .stroke(Theme.red.opacity(0.2), lineWidth: 1)
             )
             .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
         }
