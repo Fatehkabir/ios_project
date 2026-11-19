@@ -10,8 +10,8 @@ struct HomeView: View {
     @State private var randomTip: SafetyTip? = nil
     @State private var showLogoutConfirmation = false
     @State private var showAdminPanel = false
-    @State private var showRegionSheet = false
     @State private var showProfileSheet = false
+    @State private var selectedRegionFilter = "All"
 
     private var dailyTip: SafetyTip? {
         if data.tips.isEmpty { return nil }
@@ -23,8 +23,17 @@ struct HomeView: View {
         randomTip ?? dailyTip
     }
 
-    private var localAlerts: [DisasterAlert] {
-        disasterService.activeAlerts(forRegion: auth.userRegion)
+    // Filter alerts by selected filter pill or show user's region & national
+    private var filteredAlerts: [DisasterAlert] {
+        if selectedRegionFilter == "All" {
+            return disasterService.alerts.filter { !$0.isExpired }
+        } else if selectedRegionFilter == "My Region" {
+            return disasterService.activeAlerts(forRegion: auth.userRegion)
+        } else {
+            return disasterService.alerts.filter {
+                !$0.isExpired && ($0.region.lowercased() == selectedRegionFilter.lowercased() || $0.region.lowercased() == "all" || $0.region.lowercased() == "national")
+            }
+        }
     }
 
     var body: some View {
@@ -33,7 +42,7 @@ struct HomeView: View {
                 headerView
 
                 VStack(alignment: .leading, spacing: 20) {
-                    // 1. Regional Disaster Alert Banner (Offline-cached)
+                    // 1. Regional Disaster Alert Banner & Explorer
                     regionalAlertsSection
 
                     // 2. SOS Emergency Call Button
@@ -67,9 +76,6 @@ struct HomeView: View {
         .sheet(isPresented: $showAdminPanel) {
             AdminDashboardView()
         }
-        .sheet(isPresented: $showRegionSheet) {
-            RegionSettingsSheet()
-        }
         .sheet(isPresented: $showProfileSheet) {
             ProfileView()
         }
@@ -77,7 +83,7 @@ struct HomeView: View {
 
     // MARK: - Header
     private var headerView: some View {
-        HStack(alignment: .top) {
+        HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Hello,")
                     .font(.subheadline)
@@ -86,22 +92,12 @@ struct HomeView: View {
                     .font(.title2.bold())
                     .foregroundColor(.white)
 
-                Button {
-                    showRegionSheet = true
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "location.fill")
-                        Text("Region: \(auth.userRegion)")
-                        Image(systemName: "chevron.down")
-                    }
-                    .font(.caption.bold())
-                    .foregroundColor(Theme.orange)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(Color.white.opacity(0.12))
-                    .cornerRadius(6)
+                HStack(spacing: 4) {
+                    Image(systemName: "mappin.and.ellipse")
+                    Text("Registered Region: \(auth.userRegion)")
                 }
-                .padding(.top, 2)
+                .font(.caption2)
+                .foregroundColor(Theme.orange)
             }
             Spacer()
 
@@ -112,12 +108,6 @@ struct HomeView: View {
                     showProfileSheet = true
                 } label: {
                     Label("My Profile & Security", systemImage: "person.text.rectangle")
-                }
-
-                Button {
-                    showRegionSheet = true
-                } label: {
-                    Label("Change Region / SOS Number", systemImage: "gearshape")
                 }
 
                 if auth.isAdmin {
@@ -140,12 +130,12 @@ struct HomeView: View {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
-                        .frame(width: 38, height: 38)
+                        .frame(width: 40, height: 40)
                         .clipShape(Circle())
                         .overlay(Circle().stroke(Theme.orange, lineWidth: 1.5))
                 } else {
                     Image(systemName: "person.crop.circle.fill")
-                        .font(.system(size: 36))
+                        .font(.system(size: 38))
                         .foregroundColor(.white)
                 }
             }
@@ -157,28 +147,74 @@ struct HomeView: View {
         .background(Theme.navy.ignoresSafeArea(edges: .top))
     }
 
-    // MARK: - Regional Alerts
+    // MARK: - Regional Alerts & Region Filter Bar
     private var regionalAlertsSection: some View {
-        Group {
-            if !localAlerts.isEmpty {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Image(systemName: "bell.badge.fill")
-                            .foregroundColor(Theme.red)
-                        Text("ACTIVE REGIONAL WARNINGS")
-                            .font(.caption.bold())
-                            .foregroundColor(Theme.red)
-                        Spacer()
-                    }
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Image(systemName: "bell.badge.fill")
+                    .foregroundColor(Theme.red)
+                Text("DISASTER ADVISORY RADAR")
+                    .font(.caption.bold())
+                    .foregroundColor(Theme.red)
+                Spacer()
+            }
 
-                    ForEach(localAlerts) { alert in
-                        RegionalAlertBanner(alert: alert) { _ in
-                            selectedTab = 1
+            // Region Filter Scroll
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    filterPill(title: "My Region (\(auth.userRegion))", tag: "My Region")
+                    filterPill(title: "All Regions", tag: "All")
+
+                    ForEach(AppRegions.list, id: \.self) { reg in
+                        if reg != auth.userRegion {
+                            filterPill(title: reg, tag: reg)
                         }
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+
+            if filteredAlerts.isEmpty {
+                HStack(spacing: 10) {
+                    Image(systemName: "checkmark.shield.fill")
+                        .foregroundColor(Theme.green)
+                    Text("No active disaster advisories in \(selectedRegionFilter == "My Region" ? auth.userRegion : selectedRegionFilter).")
+                        .font(.caption)
+                        .foregroundColor(Theme.navy)
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Theme.green.opacity(0.1))
+                .cornerRadius(10)
+            } else {
+                ForEach(filteredAlerts) { alert in
+                    RegionalAlertBanner(alert: alert) { _ in
+                        selectedTab = 1
                     }
                 }
             }
         }
+    }
+
+    private func filterPill(title: String, tag: String) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                selectedRegionFilter = tag
+            }
+        } label: {
+            Text(title)
+                .font(.caption2.bold())
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(selectedRegionFilter == tag ? Theme.navy : Color.white)
+                .foregroundColor(selectedRegionFilter == tag ? .white : Theme.navy)
+                .cornerRadius(20)
+                .overlay(
+                    Capsule()
+                        .stroke(selectedRegionFilter == tag ? Theme.navy : Theme.textSecondary.opacity(0.3), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Search Bar
@@ -296,62 +332,6 @@ struct HomeView: View {
         if data.tips.isEmpty { return }
         withAnimation(.easeInOut(duration: 0.25)) {
             randomTip = data.tips.randomElement()
-        }
-    }
-}
-
-// MARK: - Region & SOS Settings Sheet
-struct RegionSettingsSheet: View {
-    @EnvironmentObject var auth: FirebaseAuthService
-    @Environment(\.dismiss) private var dismiss
-
-    @State private var selectedRegion = ""
-    @State private var customSOS = ""
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section("Your Region") {
-                    Picker("Selected Region", selection: $selectedRegion) {
-                        ForEach(AppRegions.list, id: \.self) { region in
-                            Text(region).tag(region)
-                        }
-                    }
-                }
-
-                Section("Emergency SOS Number") {
-                    TextField("Emergency Dial Number", text: $customSOS)
-                        .keyboardType(.phonePad)
-
-                    HStack {
-                        Button("Set 999 (National)") { customSOS = "999" }
-                            .buttonStyle(.borderless)
-                        Spacer()
-                        Button("Set 1090 (Disaster)") { customSOS = "1090" }
-                            .buttonStyle(.borderless)
-                    }
-                    .font(.caption)
-                }
-            }
-            .navigationTitle("Location & SOS Settings")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        auth.updateRegion(selectedRegion)
-                        auth.updateEmergencyNumber(customSOS.isEmpty ? "999" : customSOS)
-                        dismiss()
-                    }
-                    .fontWeight(.bold)
-                }
-            }
-            .onAppear {
-                selectedRegion = auth.userRegion
-                customSOS = auth.emergencyNumber
-            }
         }
     }
 }
