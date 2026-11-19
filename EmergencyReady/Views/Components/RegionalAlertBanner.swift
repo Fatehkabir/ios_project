@@ -47,7 +47,7 @@ struct RegionalAlertBanner: View {
             if !alert.description.isEmpty {
                 Text(alert.description)
                     .font(.footnote)
-                    .foregroundColor(Theme.textPrimary)
+                    .foregroundColor(Theme.navy)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
