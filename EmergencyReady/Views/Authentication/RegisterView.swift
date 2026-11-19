@@ -2,44 +2,91 @@ import SwiftUI
 
 struct RegisterView: View {
     @EnvironmentObject var auth: FirebaseAuthService
+    @Environment(\.dismiss) private var dismiss
 
     @State private var email = ""
     @State private var password = ""
     @State private var confirmPassword = ""
+    @State private var selectedRegion = "Dhaka"
+    @State private var selectedEmergencyNumber = "999"
     @State private var validationMessage: String? = nil
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 22) {
+            VStack(spacing: 20) {
 
                 VStack(spacing: 8) {
-                    Image(systemName: "person.crop.circle.badge.plus")
-                        .font(.system(size: 50))
+                    Image(systemName: "person.badge.shield.checkmark.fill")
+                        .font(.system(size: 48))
                         .foregroundColor(Theme.orange)
-                    Text("Create your account")
-                        .font(.title.bold())
+                    Text("Create Account")
+                        .font(.title2.bold())
                         .foregroundColor(Theme.navy)
-                    Text("Your contacts, checklist and favorites are saved to your account.")
-                        .font(.subheadline)
+                    Text("Select your region to receive local disaster alerts")
+                        .font(.footnote)
                         .foregroundColor(Theme.textSecondary)
                         .multilineTextAlignment(.center)
                 }
-                .padding(.top, 20)
+                .padding(.top, 24)
 
                 VStack(spacing: 16) {
-                    ValidatedField(title: "Email",
-                                   placeholder: "you@example.com",
-                                   text: $email,
-                                   keyboard: .emailAddress,
-                                   capitalization: .never)
+                    ValidatedField(
+                        title: "Email Address",
+                        placeholder: "user@example.com",
+                        text: $email,
+                        keyboard: .emailAddress,
+                        capitalization: .never
+                    )
 
-                    PasswordField(title: "Password",
-                                  placeholder: "At least 6 characters",
-                                  text: $password)
+                    PasswordField(
+                        title: "Password (min 6 characters)",
+                        placeholder: "Choose a secure password",
+                        text: $password
+                    )
 
-                    PasswordField(title: "Confirm Password",
-                                  placeholder: "Type the password again",
-                                  text: $confirmPassword)
+                    PasswordField(
+                        title: "Confirm Password",
+                        placeholder: "Repeat your password",
+                        text: $confirmPassword
+                    )
+
+                    // Region Selector
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Your Region (for Local Alerts)")
+                            .font(.caption.bold())
+                            .foregroundColor(Theme.navy)
+
+                        Picker("Select Region", selection: $selectedRegion) {
+                            ForEach(AppRegions.list, id: \.self) { region in
+                                Text(region).tag(region)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(10)
+                        .background(Theme.background)
+                        .cornerRadius(8)
+                    }
+
+                    // Emergency Number Selector
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Default Emergency Call Number")
+                            .font(.caption.bold())
+                            .foregroundColor(Theme.navy)
+
+                        Picker("Emergency Helpline", selection: $selectedEmergencyNumber) {
+                            Text("999 (National Emergency)").tag("999")
+                            Text("1090 (Disaster Advisory)").tag("1090")
+                            Text("16163 (Fire Service)").tag("16163")
+                            Text("112 (Standard Emergency)").tag("112")
+                            Text("911 (Emergency)").tag("911")
+                        }
+                        .pickerStyle(.menu)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(10)
+                        .background(Theme.background)
+                        .cornerRadius(8)
+                    }
 
                     if let message = validationMessage ?? auth.errorMessage {
                         ErrorBanner(message: message)
@@ -51,7 +98,7 @@ struct RegisterView: View {
                         if auth.isWorking {
                             ProgressView().tint(.white)
                         } else {
-                            Text("Register")
+                            Text("Create Account")
                         }
                     }
                     .buttonStyle(PrimaryButtonStyle())
@@ -59,13 +106,24 @@ struct RegisterView: View {
                 }
                 .padding(20)
                 .cardStyle()
+
+                Button {
+                    dismiss()
+                } label: {
+                    HStack(spacing: 4) {
+                        Text("Already have an account?")
+                            .foregroundColor(Theme.textSecondary)
+                        Text("Log In")
+                            .fontWeight(.semibold)
+                            .foregroundColor(Theme.orange)
+                    }
+                    .font(.subheadline)
+                }
             }
             .padding(.horizontal, 20)
         }
         .background(Theme.background.ignoresSafeArea())
-        .navigationTitle("Register")
         .navigationBarTitleDisplayMode(.inline)
-        .animation(.easeInOut, value: validationMessage)
         .onAppear { auth.errorMessage = nil }
     }
 
@@ -78,11 +136,14 @@ struct RegisterView: View {
         } else if password.count < 6 {
             validationMessage = "Password must be at least 6 characters."
         } else if password != confirmPassword {
-            validationMessage = "The two passwords do not match."
+            validationMessage = "Passwords do not match."
         } else {
-            // On success Firebase logs the new user in automatically,
-            // and RootView switches to the main app by itself.
-            auth.register(email: cleanEmail, password: password)
+            auth.register(
+                email: cleanEmail,
+                password: password,
+                region: selectedRegion,
+                emergencyNumber: selectedEmergencyNumber
+            )
         }
     }
 }

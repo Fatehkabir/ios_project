@@ -1,33 +1,49 @@
 {
   "categories": [
     {
-      "id": "fire",
-      "title": "Fire Emergency",
-      "description": "Escape plans, smoke alarms and what to do if a fire starts.",
-      "iconName": "flame.fill",
-      "imageName": "category-fire",
-      "colorHex": "#E8501F"
-    },
-    {
       "id": "flood",
       "title": "Flood",
-      "description": "Stay safe before, during and after flooding.",
+      "description": "Stay safe before, during and after flash floods and river flooding.",
       "iconName": "drop.fill",
       "imageName": "category-flood",
       "colorHex": "#1E6FD9"
     },
     {
+      "id": "cyclone",
+      "title": "Cyclone & Storm",
+      "description": "Evacuation steps, cyclone shelters, and high wind safety procedures.",
+      "iconName": "tornado",
+      "imageName": "category-cyclone",
+      "colorHex": "#0284C7"
+    },
+    {
+      "id": "fire",
+      "title": "Fire Emergency",
+      "description": "Escape plans, smoke evacuation, and electrical fire safety.",
+      "iconName": "flame.fill",
+      "imageName": "category-fire",
+      "colorHex": "#E8501F"
+    },
+    {
       "id": "earthquake",
       "title": "Earthquake",
-      "description": "Protect yourself when the ground shakes and afterwards.",
+      "description": "Drop, Cover and Hold On during tremors and aftershock precautions.",
       "iconName": "waveform.path.ecg",
       "imageName": "category-earthquake",
       "colorHex": "#8B5E34"
     },
     {
+      "id": "lightning",
+      "title": "Lightning & Thunderstorm",
+      "description": "Safe shelter, open field hazard avoidance, and strike emergency steps.",
+      "iconName": "bolt.fill",
+      "imageName": "category-lightning",
+      "colorHex": "#EAB308"
+    },
+    {
       "id": "road",
       "title": "Road Accident",
-      "description": "What to do at the scene of a crash and how to help safely.",
+      "description": "Crash scene protection, warning signals, and emergency assistance.",
       "iconName": "car.fill",
       "imageName": "category-road",
       "colorHex": "#475569"
@@ -35,22 +51,70 @@
     {
       "id": "firstaid",
       "title": "First Aid",
-      "description": "Bleeding, burns, choking and CPR basics.",
+      "description": "Bleeding control, burn treatment, CPR basics, and fracture care.",
       "iconName": "cross.case.fill",
       "imageName": "category-firstaid",
       "colorHex": "#2E9E5B"
-    },
-    {
-      "id": "electrical",
-      "title": "Electrical Accident",
-      "description": "Electric shock, downed power lines and electrical safety at home.",
-      "iconName": "bolt.fill",
-      "imageName": "category-electrical",
-      "colorHex": "#D99A00"
     }
   ],
 
   "guides": [
+    {
+      "id": "flood-safety",
+      "categoryId": "flood",
+      "title": "Flood Preparedness & Survival",
+      "description": "Critical actions before flood waters rise and while escaping inundated areas.",
+      "iconName": "drop.fill",
+      "imageName": "guide-flood-safety",
+      "steps": [
+        "Monitor local broadcasts or dial 1090 for flood advisory and warnings.",
+        "Store drinking water in sealed containers and move dry food, medicines, and documents to higher ground.",
+        "Turn off electricity main switches and gas supplies before water enters your house.",
+        "If instructed to evacuate, do so immediately using identified safe elevated routes.",
+        "Never walk, swim, or drive through flowing water — 6 inches of fast water can knock you down."
+      ],
+      "thingsToDo": [
+        "Move livestock, valuables, and family members to elevated ground or flood shelters.",
+        "Drink only boiled, purified, or chlorine-treated water.",
+        "Keep a long wooden pole to test ground firmness when walking through shallow water."
+      ],
+      "thingsToAvoid": [
+        "Do not allow children to play in or near floodwaters.",
+        "Do not drive or walk through flooded bridges or submerged culverts.",
+        "Do not touch electrical switches or appliances while standing in wet areas."
+      ],
+      "keywords": ["flood", "water", "river", "inundation", "drown", "monsoon", "evacuation"],
+      "sourceName": "Disaster Management Bureau & Ready.gov",
+      "sourceURL": "https://www.ready.gov/floods"
+    },
+    {
+      "id": "cyclone-safety",
+      "categoryId": "cyclone",
+      "title": "Cyclone & Coastal Storm Shelter",
+      "description": "Actions during cyclone alert signals and seeking designated shelter.",
+      "iconName": "tornado",
+      "imageName": "guide-cyclone-safety",
+      "steps": [
+        "Listen to regular radio / TV alerts and understand maritime cyclone warning signals.",
+        "Secure loose roof sheets, cut weak tree branches close to dwelling structures.",
+        "Pack an emergency bag with dry food, water, flashlight, battery radio, and first aid.",
+        "Evacuate to the nearest designated cyclone shelter before gale force winds arrive.",
+        "Remain inside the shelter until authorities officially declare the storm has fully passed."
+      ],
+      "thingsToDo": [
+        "Head to the nearest concrete cyclone shelter well before wind intensifies.",
+        "Help elderly individuals, pregnant women, and children reach safe shelters early.",
+        "Unplug all electrical equipment and turn off gas cylinders."
+      ],
+      "thingsToAvoid": [
+        "Do not venture outdoors when the eye of the storm arrives — winds will suddenly reverse violently.",
+        "Do not spread rumors or disregard evacuation orders.",
+        "Do not seek shelter under unanchored tin roofs or near power poles."
+      ],
+      "keywords": ["cyclone", "storm", "hurricane", "tornado", "wind", "coastal", "surge", "shelter"],
+      "sourceName": "Cyclone Preparedness Programme (CPP)",
+      "sourceURL": "https://www.ready.gov/hurricanes"
+    },
     {
       "id": "fire-home-escape",
       "categoryId": "fire",
@@ -60,434 +124,148 @@
       "imageName": "guide-fire-escape",
       "steps": [
         "Alert everyone in the home and get out immediately. Do not stop to collect belongings.",
-        "Use your escape plan. If there is smoke, stay low and crawl under it toward the exit.",
-        "Before opening a closed door, feel it with the back of your hand. If it is hot, use another way out.",
-        "If you open a door, open it slowly and be ready to shut it quickly if heavy smoke or fire is present.",
-        "Close doors behind you as you leave to help slow the spread of fire and smoke.",
-        "Go to your agreed meeting place outside, then call your local emergency number from outside the building.",
-        "Stay outside. If someone is still inside, tell the firefighters right away."
+        "Stay low and crawl under smoke toward the exit.",
+        "Feel doors with the back of your hand before opening. If hot, use an alternate escape route.",
+        "Close doors behind you to slow down the fire and smoke spread.",
+        "Go outside to an agreed assembly point and call emergency services (999 or 16163) immediately."
       ],
       "thingsToDo": [
         "Get out first, then call for help.",
         "Crawl low under smoke.",
-        "Meet at a planned spot outside so everyone can be counted.",
-        "If your clothes catch fire: stop, drop to the ground and roll to smother the flames."
+        "If clothes catch fire: Stop, Drop and Roll to extinguish flames."
       ],
       "thingsToAvoid": [
-        "Do not go back inside for people, pets or belongings.",
-        "Do not open a door that feels hot.",
-        "Do not use lifts/elevators during a fire.",
-        "Do not hide in a closet or under a bed."
+        "Do not go back inside for any reason.",
+        "Do not open a hot door.",
+        "Do not use elevators during a fire."
       ],
-      "keywords": ["fire", "smoke", "burning", "escape", "evacuate", "house fire", "flames"],
-      "sourceName": "Ready.gov - Home Fires",
+      "keywords": ["fire", "smoke", "burning", "escape", "evacuate", "flames"],
+      "sourceName": "Fire Service and Civil Defence",
       "sourceURL": "https://www.ready.gov/home-fires"
     },
     {
-      "id": "fire-prevention",
-      "categoryId": "fire",
-      "title": "Smoke Alarms and Escape Planning",
-      "description": "Prepare your home so everyone can escape a fire in time.",
-      "iconName": "bell.badge.fill",
-      "imageName": "guide-fire-prevention",
-      "steps": [
-        "Install smoke alarms on every level of your home, inside every bedroom and outside sleeping areas.",
-        "Test your smoke alarms regularly and replace batteries when needed.",
-        "Replace the whole smoke alarm unit every 10 years, or as the manufacturer says.",
-        "Draw a written escape plan that shows two ways out of every room.",
-        "Choose a meeting place outside the home.",
-        "Practice your escape plan at least twice a year, at different times of the day and night.",
-        "Aim to get everyone out in under 2 minutes."
-      ],
-      "thingsToDo": [
-        "Make sure everyone, including children and guests, knows the plan.",
-        "Plan extra help for babies, older adults and people with disabilities.",
-        "Keep exits and escape routes clear.",
-        "Contact your local fire service if you cannot afford or install a smoke alarm."
-      ],
-      "thingsToAvoid": [
-        "Do not disable smoke alarms while cooking.",
-        "Do not leave cooking unattended.",
-        "Do not block doors or windows with furniture."
-      ],
-      "keywords": ["smoke alarm", "detector", "prevention", "plan", "drill", "fire safety", "practice"],
-      "sourceName": "Ready.gov - Practice Your Home Fire Escape Plan",
-      "sourceURL": "https://www.ready.gov/home-fire-escape-plan"
-    },
-
-    {
-      "id": "flood-during",
-      "categoryId": "flood",
-      "title": "Before and During a Flood",
-      "description": "Stay out of flood water and move to safety when a flood threatens.",
-      "iconName": "cloud.rain.fill",
-      "imageName": "guide-flood-during",
-      "steps": [
-        "Listen to local alerts, radio or authorities for flood information and instructions.",
-        "Evacuate immediately if you are told to do so.",
-        "If you are not told to evacuate, move to higher ground or a higher floor of the building.",
-        "Do not walk, swim or drive through flood waters. Turn Around, Don't Drown!",
-        "Stay off bridges over fast-moving water.",
-        "If you are trapped by moving water, move to the highest possible point and call your local emergency number."
-      ],
-      "thingsToDo": [
-        "Prepare an emergency kit with water, a first aid kit, a flashlight and batteries.",
-        "Keep important papers in a safe place away from possible flooding.",
-        "Know the flood risk in your area and your evacuation route.",
-        "Let family and important contacts know you are safe."
-      ],
-      "thingsToAvoid": [
-        "Do not drive around road barriers or into flooded roads.",
-        "Do not become trapped in a basement or attic.",
-        "Do not go into a flooded room if water may touch electrical outlets or cords."
-      ],
-      "keywords": ["flood", "water", "rain", "flash flood", "evacuate", "drown", "storm", "monsoon"],
-      "sourceName": "Ready.gov - Floods",
-      "sourceURL": "https://www.ready.gov/floods"
-    },
-    {
-      "id": "flood-after",
-      "categoryId": "flood",
-      "title": "After a Flood",
-      "description": "Return home and clean up safely once flood waters have gone down.",
-      "iconName": "house.fill",
-      "imageName": "guide-flood-after",
-      "steps": [
-        "Return home only when local authorities say it is safe.",
-        "Avoid contact with flood water. It may be contaminated with sewage or chemicals.",
-        "If you touch flood water, wash thoroughly with soap and clean water.",
-        "Do not enter a flooded room if water may be touching electrical outlets, appliances or cords.",
-        "Have any electrical appliance that got wet checked by a professional before using it.",
-        "Wear protective clothing and sturdy shoes during clean-up.",
-        "Take photographs of damage for insurance or relief claims."
-      ],
-      "thingsToDo": [
-        "Scrub surfaces with detergent and water, and dry the area quickly to limit mould.",
-        "Tell family and friends that you are safe.",
-        "Throw away food that touched flood water."
-      ],
-      "thingsToAvoid": [
-        "Do not turn off the power at the breaker box if you must stand in water to reach it.",
-        "Do not mix cleaning products such as bleach and ammonia.",
-        "Do not walk or drive through standing water, especially if power lines may be down."
-      ],
-      "keywords": ["flood", "clean up", "recovery", "contaminated", "mould", "electric", "return home"],
-      "sourceName": "Ready.gov - Floods",
-      "sourceURL": "https://www.ready.gov/floods"
-    },
-
-    {
-      "id": "quake-during",
+      "id": "earthquake-drop-cover",
       "categoryId": "earthquake",
-      "title": "During an Earthquake: Drop, Cover, Hold On",
-      "description": "The recommended action to protect yourself while the ground is shaking.",
-      "iconName": "figure.fall",
-      "imageName": "guide-quake-during",
+      "title": "Drop, Cover, and Hold On",
+      "description": "What to do during tremors and when the shaking stops.",
+      "iconName": "waveform.path.ecg",
+      "imageName": "guide-earthquake-drop",
       "steps": [
-        "DROP to your hands and knees so the shaking cannot knock you over.",
-        "COVER your head and neck with your arms. If a sturdy desk or table is nearby, crawl under it.",
-        "HOLD ON to your shelter and stay covered until the shaking stops.",
-        "If your shelter moves, move with it.",
-        "If you are in bed, stay there and protect your head and neck with a pillow.",
-        "If you are outside, move away from buildings, trees, streetlights and power lines, then drop, cover and hold on.",
-        "If you use a wheelchair or walker, lock the wheels or brakes and protect your head and neck."
+        "DROP down onto your hands and knees immediately.",
+        "COVER your head and neck under a sturdy table or desk.",
+        "HOLD ON to your shelter until shaking stops. Be prepared for it to move.",
+        "If no shelter is nearby, drop next to an interior wall and protect your head with your arms.",
+        "When shaking stops, check for gas leaks, fires, and structural damage before exiting cautiously."
       ],
       "thingsToDo": [
-        "Practice Drop, Cover, Hold On with your family.",
-        "Stay inside until the shaking stops.",
-        "Protect your head and neck even if you cannot reach a table."
+        "Stay where you are until shaking stops completely.",
+        "Take stairs, never elevators, when exiting damaged structures.",
+        "Expect aftershocks and be ready to Drop, Cover, and Hold On again."
       ],
       "thingsToAvoid": [
-        "Do not run outside while the ground is shaking.",
-        "Do not stand in a doorway.",
-        "Stay away from windows, mirrors, hanging objects and tall furniture."
+        "Do not run outside during shaking — falling masonry and glass cause the most injuries.",
+        "Do not stand in doorways (modern doorways are not stronger than walls).",
+        "Do not use matches or lighters until you are sure gas lines are intact."
       ],
-      "keywords": ["earthquake", "quake", "shaking", "tremor", "drop cover hold", "seismic"],
-      "sourceName": "Ready.gov - Earthquakes",
+      "keywords": ["earthquake", "quake", "tremor", "shake", "drop", "cover", "hold on"],
+      "sourceName": "Earthquake Country Alliance & Ready.gov",
       "sourceURL": "https://www.ready.gov/earthquakes"
     },
     {
-      "id": "quake-after",
-      "categoryId": "earthquake",
-      "title": "After an Earthquake",
-      "description": "Stay safe from aftershocks, fires and damaged buildings.",
-      "iconName": "exclamationmark.triangle.fill",
-      "imageName": "guide-quake-after",
+      "id": "lightning-safety",
+      "categoryId": "lightning",
+      "title": "Lightning & Thunderstorm Safety",
+      "description": "Surviving severe lightning strikes in open areas and indoors.",
+      "iconName": "bolt.fill",
+      "imageName": "guide-lightning-safety",
       "steps": [
-        "Expect aftershocks. If one happens, Drop, Cover and Hold On again.",
-        "Check yourself and the people around you for injuries and give first aid if you can.",
-        "Look for small fires and put them out if it is safe. Fire is a common hazard after an earthquake.",
-        "Open cabinets carefully because objects can fall off shelves.",
-        "Wear sturdy shoes, long sleeves and gloves when moving around debris.",
-        "Listen to the radio or local alerts for instructions.",
-        "If you live near the coast and the shaking was strong, move to higher ground in case of a tsunami."
+        "When thunder roars, go indoors. Seek shelter inside a substantial building or hard-topped vehicle.",
+        "If caught in an open field, crouch down in a ball-like position with your hands over your ears and feet close together.",
+        "Stay away from tall isolated trees, wire fences, power lines, and open water bodies.",
+        "Avoid using corded electrical appliances or taking showers during a heavy thunderstorm.",
+        "Wait at least 30 minutes after hearing the last thunderclap before leaving your shelter."
       ],
       "thingsToDo": [
-        "Follow instructions from local authorities.",
-        "If you smell gas or hear hissing and suspect a leak, leave the building and report it from outside.",
-        "Leave a damaged building and stay out until it is declared safe."
+        "Get off open fields, rooftops, and ponds as soon as dark storm clouds gather.",
+        "Crouch low on the balls of your feet to minimize ground contact if stranded in the open.",
+        "Immediately provide CPR if someone is struck — lightning victims carry no electrical charge."
       ],
       "thingsToAvoid": [
-        "Do not use matches, lighters or electrical switches if you smell gas.",
-        "Do not walk barefoot around broken glass.",
-        "Do not re-enter damaged buildings."
+        "Do not shelter under solitary tall trees.",
+        "Do not hold metal farm tools, umbrellas with metal tips, or touch wire fences.",
+        "Do not lie flat on the ground (ground current travels easily across a prone body)."
       ],
-      "keywords": ["earthquake", "aftershock", "damage", "tsunami", "gas leak", "debris", "recovery"],
-      "sourceName": "Ready.gov - Earthquakes",
-      "sourceURL": "https://www.ready.gov/earthquakes"
+      "keywords": ["lightning", "thunder", "storm", "thunderstorm", "strike", "open field", "shelter"],
+      "sourceName": "National Disaster Management Advisory",
+      "sourceURL": "https://www.ready.gov/thunderstorms-lightning"
     },
-
     {
-      "id": "road-involved",
+      "id": "road-safety",
       "categoryId": "road",
-      "title": "If You Are in a Road Accident",
-      "description": "Immediate steps to take after a crash.",
-      "iconName": "car.side.fill",
-      "imageName": "guide-road-involved",
+      "title": "Road Accident Scene Safety",
+      "description": "Protecting victims and avoiding secondary collisions at a crash scene.",
+      "iconName": "car.fill",
+      "imageName": "guide-road-accident",
       "steps": [
-        "Stay calm and take a few slow breaths before you act.",
-        "Check yourself, your passengers and others nearby for injuries.",
-        "Call your local emergency number straight away if anyone is hurt, airbags opened or the vehicle cannot be driven.",
-        "If the crash is minor and it is safe, move the vehicle off the road. Do not move it if someone is hurt or trapped.",
-        "Turn on hazard lights and place a warning triangle if you have one. Step away from traffic.",
-        "If you cannot get out safely, stay buckled in with hazard lights on and wait for help.",
-        "Exchange names, phone numbers, vehicle details and insurance details with the other driver.",
-        "Take photos of the scene and note witness contact details."
+        "Stop safely, switch on hazard lights, and place reflective warning markers 50m behind the scene.",
+        "Turn off the ignition of involved vehicles to minimize fuel fire danger.",
+        "Call 999 immediately with your location, number of injured persons, and severity.",
+        "Do not move unconscious or trapped victims unless there is immediate threat of fire or explosion.",
+        "Administer basic bleeding control with firm, clean pressure while waiting for rescue teams."
       ],
       "thingsToDo": [
-        "Stay on the line with the emergency operator until they tell you to hang up.",
-        "See a doctor afterwards if you have pain, dizziness or headaches."
+        "Keep yourself and other helpers visible and away from moving oncoming traffic.",
+        "Support the injured person's head and neck to prevent spinal injury.",
+        "Reassure conscious casualties and keep them calm and warm."
       ],
       "thingsToAvoid": [
-        "Never leave the scene of an accident.",
-        "Do not stand in traffic lanes.",
-        "Do not argue about who is at fault at the scene."
+        "Do not remove a motorcycle rider's helmet unless their airway is blocked.",
+        "Do not give food or drink to injured persons who may need surgery.",
+        "Do not smoke or use open flames near crash vehicles."
       ],
-      "keywords": ["crash", "car accident", "collision", "vehicle", "traffic", "driver", "highway"],
-      "sourceName": "KidsHealth (Nemours) - What to Do After a Car Crash",
-      "sourceURL": "https://kidshealth.org/CHW/en/teens/post-crash.html"
+      "keywords": ["road", "crash", "car", "accident", "highway", "collision", "vehicle"],
+      "sourceName": "Red Cross & Trauma Management",
+      "sourceURL": "https://www.ready.gov"
     },
     {
-      "id": "road-helping",
-      "categoryId": "road",
-      "title": "Helping Injured People at a Crash",
-      "description": "How to help without putting yourself or the injured at greater risk.",
-      "iconName": "person.2.fill",
-      "imageName": "guide-road-helping",
-      "steps": [
-        "Make sure the scene is safe for you first. Park well away, turn on hazard lights and watch for traffic.",
-        "Call your local emergency number or ask someone nearby to call. Give the exact location and the number of injured people.",
-        "Do not move injured people unless there is immediate danger such as fire.",
-        "If someone is bleeding heavily, press firmly on the wound with a clean cloth.",
-        "Talk calmly to the injured person and tell them help is coming.",
-        "Stay with them until the emergency services arrive and tell responders what you saw."
-      ],
-      "thingsToDo": [
-        "Keep injured people still and warm.",
-        "Follow the instructions of the emergency operator.",
-        "Learn first aid through an approved course."
-      ],
-      "thingsToAvoid": [
-        "Do not remove a motorcyclist's helmet unless they cannot breathe and you are trained.",
-        "Do not give food or drink to injured people.",
-        "Do not put yourself in the path of traffic."
-      ],
-      "keywords": ["crash", "injured", "bystander", "help", "accident", "rescue", "motorcycle"],
-      "sourceName": "American Red Cross - First Aid",
-      "sourceURL": "https://www.redcross.org/take-a-class/first-aid"
-    },
-
-    {
-      "id": "aid-bleeding",
+      "id": "firstaid-severe-bleeding",
       "categoryId": "firstaid",
-      "title": "Severe Bleeding",
-      "description": "Control heavy bleeding until medical help arrives.",
-      "iconName": "bandage.fill",
-      "imageName": "guide-aid-bleeding",
+      "title": "Severe Bleeding & Shock",
+      "description": "Immediate direct pressure technique to control heavy blood loss.",
+      "iconName": "cross.case.fill",
+      "imageName": "guide-firstaid-bleeding",
       "steps": [
-        "Call your local emergency number or ask someone else to call.",
-        "Protect yourself: use gloves or a plastic bag if available.",
-        "Press firmly and directly on the wound with a clean cloth or dressing.",
-        "Keep pressing. If blood soaks through, add more cloth on top and keep pressing.",
-        "If the bleeding on an arm or leg is life-threatening and does not stop, and you have a tourniquet and training, apply it.",
-        "Keep the person lying down and warm until help arrives."
+        "Apply firm, continuous direct pressure to the wound with a clean cloth or sterile dressing.",
+        "Maintain heavy pressure for at least 5 to 10 minutes without lifting the pad to peek.",
+        "If blood soaks through, add another pad on top — do not remove the original dressing.",
+        "Lay the person flat and keep them warm with a blanket to prevent circulatory shock.",
+        "Call 999 or transport to the nearest medical emergency department immediately."
       ],
       "thingsToDo": [
-        "Keep pressure on the wound without stopping.",
-        "Wash your hands after giving first aid.",
-        "Take a Stop the Bleed or first aid course to learn the skills properly."
+        "Press hard and continuously directly on the wound site.",
+        "Wear disposable gloves or use a plastic barrier if available.",
+        "Keep the casualty resting quietly to maintain steady blood pressure."
       ],
       "thingsToAvoid": [
-        "Do not remove cloths that are soaked. Add more on top.",
-        "Do not remove objects stuck in a wound.",
-        "Do not leave the person alone."
+        "Do not remove objects deeply embedded in a wound — bandage around them.",
+        "Do not clean a severe, spurting wound yourself — control bleeding first.",
+        "Do not apply a makeshift tourniquet unless you have formal training."
       ],
-      "keywords": ["bleeding", "blood", "wound", "cut", "injury", "pressure", "tourniquet"],
-      "sourceName": "Stop the Bleed (American College of Surgeons)",
-      "sourceURL": "https://www.stopthebleed.org"
-    },
-    {
-      "id": "aid-burns",
-      "categoryId": "firstaid",
-      "title": "Minor Burns",
-      "description": "First aid for small burns from heat, hot liquid or steam.",
-      "iconName": "thermometer.sun.fill",
-      "imageName": "guide-aid-burns",
-      "steps": [
-        "Move the person away from the source of the burn.",
-        "Cool the burn right away with cool, running water (not ice cold) for 10 to 20 minutes.",
-        "Gently remove rings, watches or tight items near the burn before swelling starts.",
-        "Cover the burn loosely with a clean, non-stick or sterile dressing.",
-        "Seek medical help if the burn is large, deep, on the face, hands, feet or genitals, or caused by chemicals or electricity."
-      ],
-      "thingsToDo": [
-        "Keep the burned area clean and covered.",
-        "Get medical advice for any burn you are unsure about."
-      ],
-      "thingsToAvoid": [
-        "Do not use ice, butter, oil or toothpaste on a burn.",
-        "Do not break blisters.",
-        "Do not remove clothing that is stuck to the burn."
-      ],
-      "keywords": ["burn", "scald", "hot water", "heat", "blister", "skin"],
-      "sourceName": "American Red Cross - First Aid",
-      "sourceURL": "https://www.redcross.org/take-a-class/first-aid"
-    },
-    {
-      "id": "aid-choking",
-      "categoryId": "firstaid",
-      "title": "Choking (Conscious Adult)",
-      "description": "Help an adult who cannot cough, speak or breathe because of something stuck in the throat.",
-      "iconName": "lungs.fill",
-      "imageName": "guide-aid-choking",
-      "steps": [
-        "Check that the person is really choking: they cannot cough, speak or breathe. Ask if you can help.",
-        "Lean the person forward and give 5 firm back blows between the shoulder blades.",
-        "If that does not clear the blockage, give 5 abdominal thrusts.",
-        "Keep alternating 5 back blows and 5 abdominal thrusts until the object comes out or the person can breathe.",
-        "If the person becomes unresponsive, call your local emergency number and start CPR."
-      ],
-      "thingsToDo": [
-        "Call for emergency help if the blockage does not clear quickly.",
-        "Have the person checked by a doctor afterwards.",
-        "Infants need a different technique, so learn it in an approved first aid course."
-      ],
-      "thingsToAvoid": [
-        "Do not slap the back of someone who is coughing strongly. Let them keep coughing.",
-        "Do not put fingers in the mouth blindly.",
-        "Do not give water to someone who is choking."
-      ],
-      "keywords": ["choking", "airway", "food", "swallow", "heimlich", "abdominal thrusts", "back blows"],
-      "sourceName": "American Red Cross - First Aid",
-      "sourceURL": "https://www.redcross.org/take-a-class/first-aid"
-    },
-    {
-      "id": "aid-cpr",
-      "categoryId": "firstaid",
-      "title": "Hands-Only CPR (Adult)",
-      "description": "What to do for an adult who suddenly collapses and is not breathing normally.",
-      "iconName": "heart.fill",
-      "imageName": "guide-aid-cpr",
-      "steps": [
-        "Check the scene is safe. Tap the person's shoulders and shout to see if they respond.",
-        "If there is no response and no normal breathing, call your local emergency number or ask someone to call and to bring an AED.",
-        "Place the heel of one hand on the centre of the chest and your other hand on top.",
-        "Push hard and fast: about 5 cm (2 inches) deep at a rate of 100 to 120 pushes per minute.",
-        "Let the chest rise fully between pushes.",
-        "Continue until emergency responders arrive, an AED is ready or the person starts to move.",
-        "If an AED arrives, turn it on and follow its spoken instructions."
-      ],
-      "thingsToDo": [
-        "Push without stopping. Do not worry about being perfect.",
-        "Take turns if someone else can help, because pushing is tiring.",
-        "Take a certified CPR course to learn the full technique, including children and rescue breaths."
-      ],
-      "thingsToAvoid": [
-        "Do not stop pushing unless help takes over or the person wakes up.",
-        "Do not delay calling for help.",
-        "Do not move the person unless they are in danger."
-      ],
-      "keywords": ["cpr", "cardiac arrest", "heart attack", "collapse", "unconscious", "aed", "resuscitation"],
-      "sourceName": "American Heart Association - CPR",
-      "sourceURL": "https://cpr.heart.org"
-    },
-
-    {
-      "id": "elec-shock",
-      "categoryId": "electrical",
-      "title": "Someone Receives an Electric Shock",
-      "description": "Help a person who may still be in contact with electricity, without becoming a victim yourself.",
-      "iconName": "exclamationmark.triangle.fill",
-      "imageName": "guide-elec-shock",
-      "steps": [
-        "Look first. Do not touch the person: they may still be in contact with the electricity and the current could pass through you.",
-        "Call your local emergency number or have someone else call.",
-        "Turn off the power at the main switch or unplug the appliance, but only if it is safe to do so.",
-        "Once the person is free of the electrical source, check if they are breathing.",
-        "If they are not breathing normally, start CPR (see the Hands-Only CPR guide).",
-        "Cover the person lightly and keep them warm until help arrives.",
-        "Everyone who has had an electric shock should be seen by a doctor, even if they feel fine."
-      ],
-      "thingsToDo": [
-        "Keep your distance until the power is off.",
-        "Tell the emergency operator it was an electrical injury.",
-        "Remember that electric shock can cause burns inside the body."
-      ],
-      "thingsToAvoid": [
-        "Do not touch the person or the electrical source while power is on.",
-        "Do not touch burns, break blisters or remove burned clothing.",
-        "Do not use water near the electrical source."
-      ],
-      "keywords": ["electric shock", "electrocution", "electricity", "current", "wire", "burn", "power"],
-      "sourceName": "CDC - Protect Yourself From Electrical Hazards",
-      "sourceURL": "https://www.cdc.gov/disasters/electrical.html"
-    },
-    {
-      "id": "elec-safety",
-      "categoryId": "electrical",
-      "title": "Electrical Safety and Downed Power Lines",
-      "description": "Prevent electrical accidents at home and stay away from fallen power lines.",
-      "iconName": "powerplug.fill",
-      "imageName": "guide-elec-safety",
-      "steps": [
-        "Never touch a fallen power line. Treat every downed line as live.",
-        "Stay at least 10 feet (3 metres) away from overhead power lines and anything touching them.",
-        "Call the power company and your local emergency number to report the downed line.",
-        "Do not drive through standing water if downed power lines may be in the water.",
-        "Have any electrical appliance that has been in contact with water checked by a professional before using it."
-      ],
-      "thingsToDo": [
-        "Keep electrical appliances and cords away from water.",
-        "Replace damaged cords and plugs.",
-        "Turn off and unplug a faulty appliance if it is safe to do so."
-      ],
-      "thingsToAvoid": [
-        "Do not touch electrical equipment with wet hands.",
-        "Do not overload sockets or extension cords.",
-        "Do not enter a flooded room if water covers electrical outlets or cords."
-      ],
-      "keywords": ["power line", "downed wire", "socket", "appliance", "wet", "extension cord", "electrical safety"],
-      "sourceName": "CDC - Protect Yourself From Electrical Hazards",
-      "sourceURL": "https://www.cdc.gov/disasters/electrical.html"
+      "keywords": ["bleeding", "blood", "wound", "first aid", "shock", "cut", "artery"],
+      "sourceName": "International Federation of Red Cross and Red Crescent",
+      "sourceURL": "https://www.ready.gov"
     }
   ],
 
   "tips": [
-    { "id": "tip-fire-1", "categoryId": "fire", "text": "Practice your home fire escape plan at least twice a year, at different times of day.", "iconName": "figure.run" },
-    { "id": "tip-fire-2", "categoryId": "fire", "text": "Put smoke alarms inside every bedroom, outside sleeping areas and on every level of your home.", "iconName": "bell.badge.fill" },
-    { "id": "tip-fire-3", "categoryId": "fire", "text": "If you are escaping a fire and there is smoke, stay low and crawl to the exit.", "iconName": "flame.fill" },
-    { "id": "tip-flood-1", "categoryId": "flood", "text": "Turn Around, Don't Drown! Never walk, swim or drive through flood water.", "iconName": "drop.fill" },
-    { "id": "tip-flood-2", "categoryId": "flood", "text": "Keep important papers in a safe place away from possible flooding.", "iconName": "doc.fill" },
-    { "id": "tip-flood-3", "categoryId": "flood", "text": "Stay off bridges over fast-moving water.", "iconName": "water.waves" },
-    { "id": "tip-quake-1", "categoryId": "earthquake", "text": "When the ground shakes: Drop, Cover, and Hold On.", "iconName": "waveform.path.ecg" },
-    { "id": "tip-quake-2", "categoryId": "earthquake", "text": "Practice Drop, Cover, Hold On with your family so everyone reacts quickly.", "iconName": "person.3.fill" },
-    { "id": "tip-quake-3", "categoryId": "earthquake", "text": "Expect aftershocks after an earthquake and be ready to Drop, Cover and Hold On again.", "iconName": "exclamationmark.triangle.fill" },
-    { "id": "tip-road-1", "categoryId": "road", "text": "After a crash, check for injuries first and call emergency services if anyone is hurt.", "iconName": "car.fill" },
-    { "id": "tip-road-2", "categoryId": "road", "text": "Turn on your hazard lights and step away from traffic after a crash if it is safe.", "iconName": "light.beacon.max.fill" },
-    { "id": "tip-aid-1", "categoryId": "firstaid", "text": "For severe bleeding, press firmly and directly on the wound with a clean cloth and keep pressing.", "iconName": "bandage.fill" },
-    { "id": "tip-aid-2", "categoryId": "firstaid", "text": "Cool a minor burn with cool running water for 10 to 20 minutes. Do not use ice.", "iconName": "thermometer.sun.fill" },
-    { "id": "tip-aid-3", "categoryId": "firstaid", "text": "Take a first aid and CPR course. Trained helpers save lives.", "iconName": "cross.case.fill" },
-    { "id": "tip-elec-1", "categoryId": "electrical", "text": "Never touch a fallen power line. Stay at least 10 feet (3 metres) away and report it.", "iconName": "bolt.fill" },
-    { "id": "tip-elec-2", "categoryId": "electrical", "text": "Keep electrical appliances and cords away from water, and never touch them with wet hands.", "iconName": "powerplug.fill" }
+    { "id": "tip-flood-1", "categoryId": "flood", "text": "Turn Around, Don't Drown! Never walk, swim or drive through moving flood waters.", "iconName": "drop.fill" },
+    { "id": "tip-flood-2", "categoryId": "flood", "text": "Keep copies of national ID and deeds in waterproof zip bags stored in an accessible high place.", "iconName": "doc.fill" },
+    { "id": "tip-cyclone-1", "categoryId": "cyclone", "text": "When cyclone warning signal 8 or higher is raised, move promptly to your assigned shelter.", "iconName": "tornado" },
+    { "id": "tip-cyclone-2", "categoryId": "cyclone", "text": "Keep an emergency bag ready with dry biscuits, flashlight, battery radio, and matches.", "iconName": "bag.fill" },
+    { "id": "tip-fire-1", "categoryId": "fire", "text": "If caught in smoke, crawl on your hands and knees where cleaner cooler air is close to the floor.", "iconName": "flame.fill" },
+    { "id": "tip-quake-1", "categoryId": "earthquake", "text": "When ground shakes: Drop, Cover, and Hold On. Avoid running out into falling glass or bricks.", "iconName": "waveform.path.ecg" },
+    { "id": "tip-lightning-1", "categoryId": "lightning", "text": "When thunder roars, go indoors. Stay away from isolated tall trees and open water bodies.", "iconName": "bolt.fill" },
+    { "id": "tip-road-1", "categoryId": "road", "text": "At a crash scene, make the area safe first with hazard lights before approaching casualties.", "iconName": "car.fill" },
+    { "id": "tip-aid-1", "categoryId": "firstaid", "text": "For severe bleeding, continuous direct pressure with a clean cloth is the primary life-saver.", "iconName": "cross.case.fill" }
   ]
 }

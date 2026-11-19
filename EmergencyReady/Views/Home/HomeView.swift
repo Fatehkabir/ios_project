@@ -3,17 +3,15 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject var auth: FirebaseAuthService
     @EnvironmentObject var data: EmergencyDataService
+    @EnvironmentObject var disasterService: DisasterAlertService
 
-    // Binding to MainTabView's selectedTab, so the "See all" button can switch tabs.
     @Binding var selectedTab: Int
 
     @State private var randomTip: SafetyTip? = nil
     @State private var showLogoutConfirmation = false
     @State private var showAdminPanel = false
-    @StateObject private var weatherService = WeatherAlertService()
-    @ObservedObject private var locationService = LocationService.shared
+    @State private var showRegionSheet = false
 
-    // "kabir@mail.com" -> "kabir"
     private var displayName: String {
         if let name = auth.userEmail.split(separator: "@").first, !name.isEmpty {
             return String(name)
@@ -21,16 +19,18 @@ struct HomeView: View {
         return "there"
     }
 
-    // The "tip of the day": a different tip each calendar day, same all day.
     private var dailyTip: SafetyTip? {
         if data.tips.isEmpty { return nil }
         let day = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 1
         return data.tips[day % data.tips.count]
     }
 
-    // The tip on screen: the random one if the user pressed the button, else the daily one.
     private var shownTip: SafetyTip? {
         randomTip ?? dailyTip
+    }
+
+    private var localAlerts: [DisasterAlert] {
+        disasterService.activeAlerts(forRegion: auth.userRegion)
     }
 
     var body: some View {
@@ -38,47 +38,47 @@ struct HomeView: View {
             VStack(spacing: 0) {
                 headerView
 
-                VStack(alignment: .leading, spacing: 22) {
-                    searchBar
-                    quickEmergencyActions
-                    weatherAlertsSection
-                    emergencyNotice
+                VStack(alignment: .leading, spacing: 20) {
+                    // 1. Regional Disaster Alert Banner (Offline-cached)
+                    regionalAlertsSection
 
-                    if data.isLoading {
-                        LoadingView(text: "Loading safety information...")
-                    } else if let message = data.errorMessage {
-                        ErrorStateView(message: message) { data.loadData() }
-                    } else {
-                        tipSection
-                        categorySection
-                    }
+                    // 2. SOS Emergency Call Button
+                    SOSButton(number: auth.emergencyNumber)
+
+                    // 3. Search Bar
+                    searchBar
+
+                    // 4. Offline / Last Sync Status
+                    syncStatusSection
+
+                    // 5. Daily Safety Tip
+                    tipSection
+
+                    // 6. Emergency Categories Grid
+                    categorySection
                 }
                 .padding()
             }
         }
         .background(Theme.background.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
-        .confirmationDialog("Log out of EmergencyReady?",
-                            isPresented: $showLogoutConfirmation,
-                            titleVisibility: .visible) {
+        .confirmationDialog(
+            "Log out of EmergencyReady?",
+            isPresented: $showLogoutConfirmation,
+            titleVisibility: .visible
+        ) {
             Button("Log Out", role: .destructive) { auth.logout() }
             Button("Cancel", role: .cancel) { }
         }
         .sheet(isPresented: $showAdminPanel) {
             AdminDashboardView()
         }
-        .onAppear {
-            locationService.startSingleUpdate()
-        }
-        .onChange(of: locationService.lastLocation) { newLoc in
-            if let loc = newLoc {
-                weatherService.fetchAlerts(for: loc)
-            }
+        .sheet(isPresented: $showRegionSheet) {
+            RegionSettingsSheet()
         }
     }
 
-    // MARK: - Pieces of the screen
-
+    // MARK: - Header
     private var headerView: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 4) {
@@ -86,21 +86,40 @@ struct HomeView: View {
                     .font(.subheadline)
                     .foregroundColor(.white.opacity(0.8))
                 Text(displayName)
-                    .font(.title.bold())
+                    .font(.title2.bold())
                     .foregroundColor(.white)
-                Text("Be prepared. Stay safe.")
-                    .font(.subheadline)
+
+                Button {
+                    showRegionSheet = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "location.fill")
+                        Text("Region: \(auth.userRegion)")
+                        Image(systemName: "chevron.down")
+                    }
+                    .font(.caption.bold())
                     .foregroundColor(Theme.orange)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.white.opacity(0.12))
+                    .cornerRadius(6)
+                }
+                .padding(.top, 2)
             }
             Spacer()
 
             Menu {
                 Text(auth.userEmail)
+                Button {
+                    showRegionSheet = true
+                } label: {
+                    Label("Change Region / SOS Number", systemImage: "gearshape")
+                }
                 if auth.isAdmin {
                     Button {
                         showAdminPanel = true
                     } label: {
-                        Label("Admin Control Panel", systemImage: "lock.shield.fill")
+                        Label("Admin Disaster Manager", systemImage: "lock.shield.fill")
                     }
                 }
                 Button(role: .destructive) {
@@ -116,214 +135,137 @@ struct HomeView: View {
             .accessibilityLabel("Account menu")
         }
         .padding(.horizontal)
-        .padding(.vertical, 20)
+        .padding(.vertical, 16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Theme.navy.ignoresSafeArea(edges: .top))
     }
 
+    // MARK: - Regional Alerts
+    private var regionalAlertsSection: some View {
+        Group {
+            if !localAlerts.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Image(systemName: "bell.badge.fill")
+                            .foregroundColor(Theme.red)
+                        Text("ACTIVE REGIONAL WARNINGS")
+                            .font(.caption.bold())
+                            .foregroundColor(Theme.red)
+                        Spacer()
+                    }
+
+                    ForEach(localAlerts) { alert in
+                        RegionalAlertBanner(alert: alert) { _ in
+                            selectedTab = 1
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Search Bar
     private var searchBar: some View {
         NavigationLink {
             SearchView()
         } label: {
             HStack {
                 Image(systemName: "magnifyingglass")
-                Text("Search emergencies, guides, keywords")
+                Text("Search emergency procedures, keywords")
                 Spacer()
             }
             .font(.subheadline)
             .foregroundColor(Theme.textSecondary)
             .padding(14)
-            .background(Theme.card)
-            .cornerRadius(Theme.cornerRadius)
-            .shadow(color: Color.black.opacity(0.06), radius: 6, x: 0, y: 2)
+            .cardStyle()
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Search emergency instructions")
     }
 
-    // MARK: - Quick Emergency Actions (Nearby Hospital / Police)
-    private var quickEmergencyActions: some View {
-        HStack(spacing: 12) {
-            Button {
-                openAppleMapsSearch(query: "hospital")
-            } label: {
-                HStack {
-                    Image(systemName: "cross.fill")
-                        .font(.headline)
-                    Text("Find Hospital")
-                        .font(.subheadline.bold())
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Theme.red)
-                .cornerRadius(Theme.cornerRadius)
+    // MARK: - Sync Status
+    private var syncStatusSection: some View {
+        HStack(spacing: 6) {
+            Image(systemName: disasterService.errorMessage != nil ? "wifi.slash" : "arrow.triangle.2.circlepath")
+                .font(.caption2)
+                .foregroundColor(Theme.textSecondary)
+
+            if let syncTime = disasterService.lastSyncTime {
+                Text("Alerts synced: \(syncTime.formatted(date: .omitted, time: .shortened)) (Cached offline)")
+                    .font(.caption2)
+                    .foregroundColor(Theme.textSecondary)
+            } else {
+                Text("Offline mode active • Guides loaded from local storage")
+                    .font(.caption2)
+                    .foregroundColor(Theme.textSecondary)
             }
-
-            Button {
-                openAppleMapsSearch(query: "police station")
-            } label: {
-                HStack {
-                    Image(systemName: "shield.lefthalf.filled")
-                        .font(.headline)
-                    Text("Find Police")
-                        .font(.subheadline.bold())
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Theme.navyLight)
-                .cornerRadius(Theme.cornerRadius)
-            }
+            Spacer()
         }
+        .padding(.horizontal, 4)
     }
 
-    private func openAppleMapsSearch(query: String) {
-        let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query
-        if let location = locationService.lastLocation {
-            let lat = location.coordinate.latitude
-            let lon = location.coordinate.longitude
-            if let url = URL(string: "http://maps.apple.com/?q=\(encoded)&sll=\(lat),\(lon)") {
-                UIApplication.shared.open(url)
-                return
-            }
-        }
-        if let url = URL(string: "http://maps.apple.com/?q=\(encoded)") {
-            UIApplication.shared.open(url)
-        }
-    }
-
-    // MARK: - Local Disaster & Weather Alerts
-    private var weatherAlertsSection: some View {
-        Group {
-            if !weatherService.alerts.isEmpty {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(Theme.red)
-                        Text("Active Local Hazard Alerts")
-                            .font(.headline)
-                            .foregroundColor(Theme.navy)
-                        Spacer()
-                    }
-
-                    ForEach(weatherService.alerts) { alert in
-                        VStack(alignment: .leading, spacing: 6) {
-                            HStack {
-                                Text(alert.event)
-                                    .font(.subheadline.bold())
-                                    .foregroundColor(Theme.red)
-                                Spacer()
-                                Text(alert.severity)
-                                    .font(.caption2.bold())
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 3)
-                                    .background(Theme.red.opacity(0.15))
-                                    .cornerRadius(6)
-                                    .foregroundColor(Theme.red)
-                            }
-
-                            Text(alert.headline)
-                                .font(.footnote)
-                                .foregroundColor(Theme.navy)
-
-                            if let instruction = alert.instruction, !instruction.isEmpty {
-                                Text(instruction)
-                                    .font(.caption)
-                                    .foregroundColor(Theme.textSecondary)
-                                    .padding(.top, 2)
-                            }
-                        }
-                        .padding(12)
-                        .background(Theme.red.opacity(0.06))
-                        .cornerRadius(12)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Theme.red.opacity(0.2), lineWidth: 1)
-                        )
-                    }
-                }
-                .padding(14)
-                .cardStyle()
-            }
-        }
-    }
-
-    private var emergencyNotice: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "phone.arrow.up.right.fill")
-                .foregroundColor(Theme.orange)
-            Text("In immediate danger, call your local emergency number first (for example 999 in Bangladesh, 911 in the USA, 112 in the EU).")
-                .font(.footnote)
-                .foregroundColor(Theme.navy)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.orange.opacity(0.12))
-        .cornerRadius(Theme.cornerRadius)
-    }
-
+    // MARK: - Safety Tip
     private var tipSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("Safety Tip")
-                    .font(.title3.bold())
+                Text("Daily Safety Tip")
+                    .font(.headline)
                     .foregroundColor(Theme.navy)
                 Spacer()
-                // NavigationLink to the full tips screen.
                 NavigationLink {
                     SafetyTipsView()
                 } label: {
-                    Text("View more tips")
-                        .font(.subheadline.weight(.semibold))
+                    Text("All tips")
+                        .font(.caption.bold())
                         .foregroundColor(Theme.orange)
                 }
             }
 
             if let tip = shownTip {
-                TipCard(tip: tip,
-                        categoryTitle: data.category(withId: tip.categoryId)?.title ?? "Safety",
-                        color: data.color(forCategory: tip.categoryId))
-                    .id(tip.id)   // a new id makes SwiftUI play the transition below
-                    .transition(.asymmetric(insertion: .scale.combined(with: .opacity),
-                                            removal: .opacity))
+                TipCard(
+                    tip: tip,
+                    categoryTitle: data.category(withId: tip.categoryId)?.title ?? "Safety",
+                    color: data.color(forCategory: tip.categoryId)
+                )
+                .id(tip.id)
+                .transition(.opacity)
             }
 
             Button {
                 showRandomTip()
             } label: {
-                Label("Show a random tip", systemImage: "shuffle")
-                    .font(.subheadline.weight(.semibold))
+                Label("Randomize recommendation", systemImage: "shuffle")
+                    .font(.caption.bold())
                     .foregroundColor(Theme.navy)
             }
         }
     }
 
+    // MARK: - Categories Section
     private var categorySection: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("Emergency Categories")
-                    .font(.title3.bold())
+                    .font(.headline)
                     .foregroundColor(Theme.navy)
                 Spacer()
                 Button {
-                    selectedTab = 1   // writes through the Binding: switches to the Guides tab
+                    selectedTab = 1
                 } label: {
-                    Text("See all")
-                        .font(.subheadline.weight(.semibold))
+                    Text("See all guides")
+                        .font(.caption.bold())
                         .foregroundColor(Theme.orange)
                 }
             }
 
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 14) {
-                    // ForEach loops over the categories array and builds one card per item.
+                HStack(spacing: 12) {
                     ForEach(data.categories) { category in
                         NavigationLink {
                             GuideListView(category: category)
                         } label: {
                             CategoryCard(category: category)
-                                .frame(width: 170)
+                                .frame(width: 165)
                         }
                         .buttonStyle(.plain)
                     }
@@ -335,8 +277,64 @@ struct HomeView: View {
 
     private func showRandomTip() {
         if data.tips.isEmpty { return }
-        withAnimation(.easeInOut(duration: 0.35)) {
+        withAnimation(.easeInOut(duration: 0.25)) {
             randomTip = data.tips.randomElement()
+        }
+    }
+}
+
+// MARK: - Region & SOS Settings Sheet
+struct RegionSettingsSheet: View {
+    @EnvironmentObject var auth: FirebaseAuthService
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var selectedRegion = ""
+    @State private var customSOS = ""
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Your Region") {
+                    Picker("Selected Region", selection: $selectedRegion) {
+                        ForEach(AppRegions.list, id: \.self) { region in
+                            Text(region).tag(region)
+                        }
+                    }
+                }
+
+                Section("Emergency SOS Number") {
+                    TextField("Emergency Dial Number", text: $customSOS)
+                        .keyboardType(.phonePad)
+
+                    HStack {
+                        Button("Set 999 (National)") { customSOS = "999" }
+                            .buttonStyle(.borderless)
+                        Spacer()
+                        Button("Set 1090 (Disaster)") { customSOS = "1090" }
+                            .buttonStyle(.borderless)
+                    }
+                    .font(.caption)
+                }
+            }
+            .navigationTitle("Location & SOS Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        auth.updateRegion(selectedRegion)
+                        auth.updateEmergencyNumber(customSOS.isEmpty ? "999" : customSOS)
+                        dismiss()
+                    }
+                    .fontWeight(.bold)
+                }
+            }
+            .onAppear {
+                selectedRegion = auth.userRegion
+                customSOS = auth.emergencyNumber
+            }
         }
     }
 }

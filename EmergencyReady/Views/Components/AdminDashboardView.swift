@@ -1,52 +1,111 @@
 import SwiftUI
 
 struct AdminDashboardView: View {
-    @EnvironmentObject var data: EmergencyDataService
+    @EnvironmentObject var disasterService: DisasterAlertService
     @EnvironmentObject var auth: FirebaseAuthService
     @Environment(\.dismiss) private var dismiss
 
-    @State private var showingAddGuideSheet = false
-    @State private var showingAddTipSheet = false
-    @State private var editingGuide: EmergencyGuide? = nil
-    @State private var editingTip: SafetyTip? = nil
-    @State private var selectedTab = 0
+    @State private var showingCreateSheet = false
+    @State private var alertToEdit: DisasterAlert? = nil
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
+            List {
                 // Admin Banner
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Admin Control Center")
-                            .font(.title2.bold())
-                            .foregroundColor(.white)
-                        Text("Logged in as: \(auth.userEmail)")
+                Section {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Image(systemName: "lock.shield.fill")
+                                .font(.title2)
+                                .foregroundColor(Theme.orange)
+                            Text("Disaster Alert Manager")
+                                .font(.headline)
+                                .foregroundColor(Theme.navy)
+                        }
+                        Text("Logged in as Administrator: \(auth.userEmail)")
                             .font(.caption)
-                            .foregroundColor(.white.opacity(0.8))
+                            .foregroundColor(Theme.textSecondary)
+                        Text("Alerts published here are broadcast to users in the selected region and cached offline on their devices.")
+                            .font(.caption2)
+                            .foregroundColor(Theme.textSecondary)
                     }
-                    Spacer()
-                    Image(systemName: "lock.shield.fill")
-                        .font(.system(size: 36))
-                        .foregroundColor(Theme.orange)
+                    .padding(.vertical, 4)
                 }
-                .padding()
-                .background(Theme.navy)
 
-                // Mode Picker
-                Picker("Admin Mode", selection: $selectedTab) {
-                    Text("Emergency Guides (\(data.guides.count))").tag(0)
-                    Text("Safety Tips (\(data.tips.count))").tag(1)
-                }
-                .pickerStyle(.segmented)
-                .padding()
+                // Active Disasters Section
+                Section(header: Text("Broadcasted Alerts (\(disasterService.alerts.count))")) {
+                    if disasterService.alerts.isEmpty {
+                        Text("No active disaster alerts. Tap '+ Create Alert' to issue a regional advisory.")
+                            .font(.subheadline)
+                            .foregroundColor(Theme.textSecondary)
+                            .padding(.vertical, 8)
+                    } else {
+                        ForEach(disasterService.alerts) { alert in
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack {
+                                    Text(alert.region.uppercased())
+                                        .font(.caption2.bold())
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(Theme.navy.opacity(0.1))
+                                        .cornerRadius(4)
+                                        .foregroundColor(Theme.navy)
 
-                if selectedTab == 0 {
-                    guidesManagementList
-                } else {
-                    tipsManagementList
+                                    Text(alert.severity.uppercased())
+                                        .font(.caption2.bold())
+                                        .foregroundColor(alert.severity.lowercased() == "extreme" || alert.severity.lowercased() == "severe" ? Theme.red : Theme.orange)
+
+                                    Spacer()
+
+                                    // Active / Inactive status
+                                    Button {
+                                        disasterService.toggleAlertStatus(alert)
+                                    } label: {
+                                        Text(alert.isActive ? "ACTIVE" : "PAUSED")
+                                            .font(.caption2.bold())
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(alert.isActive ? Theme.green.opacity(0.15) : Color.gray.opacity(0.2))
+                                            .foregroundColor(alert.isActive ? Theme.green : Color.gray)
+                                            .cornerRadius(4)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+
+                                Text(alert.title)
+                                    .font(.headline)
+                                    .foregroundColor(Theme.navy)
+
+                                if !alert.description.isEmpty {
+                                    Text(alert.description)
+                                        .font(.caption)
+                                        .foregroundColor(Theme.textSecondary)
+                                        .lineLimit(2)
+                                }
+
+                                HStack {
+                                    Text("Expires: \(alert.expiresAt.formatted(date: .abbreviated, time: .shortened))")
+                                        .font(.caption2)
+                                        .foregroundColor(Theme.textSecondary)
+                                    Spacer()
+                                    Button("Edit") {
+                                        alertToEdit = alert
+                                    }
+                                    .font(.caption.bold())
+                                    .foregroundColor(Theme.orange)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                        .onDelete { indexSet in
+                            for index in indexSet {
+                                let alert = disasterService.alerts[index]
+                                disasterService.deleteAlert(id: alert.id)
+                            }
+                        }
+                    }
                 }
             }
-            .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Admin Panel")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -55,335 +114,158 @@ struct AdminDashboardView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        if selectedTab == 0 {
-                            showingAddGuideSheet = true
-                        } else {
-                            showingAddTipSheet = true
-                        }
+                        showingCreateSheet = true
                     } label: {
                         HStack(spacing: 4) {
                             Image(systemName: "plus.circle.fill")
-                            Text("Add")
+                            Text("Create Alert")
                         }
-                        .fontWeight(.semibold)
+                        .fontWeight(.bold)
                         .foregroundColor(Theme.orange)
                     }
                 }
             }
-            .sheet(isPresented: $showingAddGuideSheet) {
-                AdminEditGuideView(guideToEdit: nil)
+            .sheet(isPresented: $showingCreateSheet) {
+                AdminCreateAlertView(alertToEdit: nil)
             }
-            .sheet(item: $editingGuide) { guide in
-                AdminEditGuideView(guideToEdit: guide)
-            }
-            .sheet(isPresented: $showingAddTipSheet) {
-                AdminEditTipView(tipToEdit: nil)
-            }
-            .sheet(item: $editingTip) { tip in
-                AdminEditTipView(tipToEdit: tip)
+            .sheet(item: $alertToEdit) { alert in
+                AdminCreateAlertView(alertToEdit: alert)
             }
         }
-    }
-
-    // MARK: - Guides Management List
-    private var guidesManagementList: some View {
-        List {
-            Section(header: Text("Tap a guide to Edit • Swipe left to Delete").font(.caption)) {
-                ForEach(data.guides) { guide in
-                    Button {
-                        editingGuide = guide
-                    } label: {
-                        HStack(spacing: 12) {
-                            IconBadge(
-                                imageName: nil,
-                                symbolName: guide.iconName,
-                                color: data.color(forCategory: guide.categoryId),
-                                size: 40
-                            )
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(guide.title)
-                                    .font(.headline)
-                                    .foregroundColor(Theme.navy)
-                                Text(data.category(withId: guide.categoryId)?.title ?? guide.categoryId)
-                                    .font(.caption.bold())
-                                    .foregroundColor(data.color(forCategory: guide.categoryId))
-                            }
-                            Spacer()
-                            Image(systemName: "pencil.circle")
-                                .font(.title3)
-                                .foregroundColor(Theme.orange)
-                        }
-                        .padding(.vertical, 4)
-                    }
-                }
-                .onDelete { indexSet in
-                    for index in indexSet {
-                        let guide = data.guides[index]
-                        data.deleteGuide(withId: guide.id)
-                    }
-                }
-            }
-        }
-        .scrollContentBackground(.hidden)
-    }
-
-    // MARK: - Tips Management List
-    private var tipsManagementList: some View {
-        List {
-            Section(header: Text("Tap a tip to Edit • Swipe left to Delete").font(.caption)) {
-                ForEach(data.tips) { tip in
-                    Button {
-                        editingTip = tip
-                    } label: {
-                        HStack(alignment: .top, spacing: 12) {
-                            Image(systemName: tip.iconName)
-                                .foregroundColor(data.color(forCategory: tip.categoryId))
-                                .padding(.top, 2)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(tip.text)
-                                    .font(.subheadline)
-                                    .foregroundColor(Theme.navy)
-                                    .multilineTextAlignment(.leading)
-                                Text(data.category(withId: tip.categoryId)?.title ?? tip.categoryId)
-                                    .font(.caption.bold())
-                                    .foregroundColor(data.color(forCategory: tip.categoryId))
-                            }
-                            Spacer()
-                            Image(systemName: "pencil.circle")
-                                .font(.title3)
-                                .foregroundColor(Theme.orange)
-                        }
-                        .padding(.vertical, 4)
-                    }
-                }
-                .onDelete { indexSet in
-                    for index in indexSet {
-                        let tip = data.tips[index]
-                        data.deleteTip(withId: tip.id)
-                    }
-                }
-            }
-        }
-        .scrollContentBackground(.hidden)
     }
 }
 
-// MARK: - Add / Edit Guide Sheet
-struct AdminEditGuideView: View {
+// MARK: - Create / Edit Disaster Alert Sheet
+struct AdminCreateAlertView: View {
+    @EnvironmentObject var disasterService: DisasterAlertService
+    @EnvironmentObject var auth: FirebaseAuthService
     @EnvironmentObject var data: EmergencyDataService
     @Environment(\.dismiss) private var dismiss
 
-    let guideToEdit: EmergencyGuide?
+    let alertToEdit: DisasterAlert?
 
     @State private var title = ""
     @State private var description = ""
-    @State private var selectedCategoryId = "fire"
-    @State private var stepsText = ""
-    @State private var thingsToDoText = ""
-    @State private var thingsToAvoidText = ""
-    @State private var sourceName = "Official Safety Advisory"
-    @State private var sourceURL = "https://www.ready.gov"
+    @State private var selectedRegion = "Dhaka"
+    @State private var selectedCategory = "flood"
+    @State private var selectedSeverity = "Severe"
+    @State private var isActive = true
+    @State private var expirationHours = 48
 
-    var isEditing: Bool { guideToEdit != nil }
+    var isEditing: Bool { alertToEdit != nil }
 
     var body: some View {
         NavigationStack {
             Form {
-                Section("Guide Details") {
-                    TextField("Title (e.g. Chemical Spill)", text: $title)
-                    TextField("Summary description", text: $description)
+                Section("Alert Information") {
+                    TextField("Alert Title (e.g. Flash Flood Warning)", text: $title)
+                    TextField("Public advisory & instructions", text: $description, axis: .vertical)
+                        .lineLimit(3...6)
+                }
 
-                    Picker("Category", selection: $selectedCategoryId) {
-                        ForEach(data.categories) { cat in
-                            Text(cat.title).tag(cat.id)
+                Section("Target Region") {
+                    Picker("Target Region", selection: $selectedRegion) {
+                        ForEach(AppRegions.list, id: \.self) { reg in
+                            Text(reg).tag(reg)
                         }
                     }
                 }
 
-                Section("Action Steps (one per line)") {
-                    TextEditor(text: $stepsText)
-                        .frame(minHeight: 90)
+                Section("Emergency Category & Severity") {
+                    Picker("Linked Emergency", selection: $selectedCategory) {
+                        ForEach(data.categories) { cat in
+                            Text(cat.title).tag(cat.id)
+                        }
+                    }
+
+                    Picker("Severity Level", selection: $selectedSeverity) {
+                        Text("Minor").tag("Minor")
+                        Text("Moderate").tag("Moderate")
+                        Text("Severe").tag("Severe")
+                        Text("Extreme").tag("Extreme")
+                    }
+                    .pickerStyle(.segmented)
                 }
 
-                Section("What to Do (one per line)") {
-                    TextEditor(text: $thingsToDoText)
-                        .frame(minHeight: 70)
+                Section("Alert Status & Expiration") {
+                    Toggle("Active Broadcast", isOn: $isActive)
+
+                    Stepper(value: $expirationHours, in: 6...168, step: 6) {
+                        Text("Expires in: \(expirationHours) hours")
+                    }
                 }
 
-                Section("What to Avoid (one per line)") {
-                    TextEditor(text: $thingsToAvoidText)
-                        .frame(minHeight: 70)
-                }
-
-                Section("Official Source") {
-                    TextField("Source Name", text: $sourceName)
-                    TextField("Source URL", text: $sourceURL)
-                        .keyboardType(.URL)
-                }
-
-                if isEditing, let g = guideToEdit {
+                if isEditing, let alert = alertToEdit {
                     Section {
                         Button(role: .destructive) {
-                            data.deleteGuide(withId: g.id)
+                            disasterService.deleteAlert(id: alert.id)
                             dismiss()
                         } label: {
                             HStack {
                                 Spacer()
-                                Label("Delete Guide", systemImage: "trash")
+                                Label("Delete Alert", systemImage: "trash")
                                 Spacer()
                             }
                         }
                     }
                 }
             }
-            .navigationTitle(isEditing ? "Edit Guide" : "Add Emergency Guide")
+            .navigationTitle(isEditing ? "Edit Disaster Alert" : "New Disaster Alert")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        saveGuide()
+                    Button("Broadcast") {
+                        saveAlert()
                     }
                     .fontWeight(.bold)
                     .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
             .onAppear {
-                if let guide = guideToEdit {
-                    title = guide.title
-                    description = guide.description
-                    selectedCategoryId = guide.categoryId
-                    stepsText = guide.steps.joined(separator: "\n")
-                    thingsToDoText = guide.thingsToDo.joined(separator: "\n")
-                    thingsToAvoidText = guide.thingsToAvoid.joined(separator: "\n")
-                    sourceName = guide.sourceName
-                    sourceURL = guide.sourceURL
+                if let alert = alertToEdit {
+                    title = alert.title
+                    description = alert.description
+                    selectedRegion = alert.region
+                    selectedCategory = alert.categoryId
+                    selectedSeverity = alert.severity
+                    isActive = alert.isActive
+                    let diff = Int(alert.expiresAt.timeIntervalSince(Date()) / 3600)
+                    expirationHours = max(6, diff)
                 }
             }
         }
     }
 
-    private func saveGuide() {
-        let steps = stepsText
-            .components(separatedBy: "\n")
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty }
+    private func saveAlert() {
+        let expiresAt = Date().addingTimeInterval(Double(expirationHours * 3600))
 
-        let dos = thingsToDoText
-            .components(separatedBy: "\n")
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty }
-
-        let donts = thingsToAvoidText
-            .components(separatedBy: "\n")
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty }
-
-        let guideId = guideToEdit?.id ?? UUID().uuidString
-
-        let guide = EmergencyGuide(
-            id: guideId,
-            categoryId: selectedCategoryId,
-            title: title,
-            description: description,
-            iconName: guideToEdit?.iconName ?? "exclamationmark.triangle.fill",
-            imageName: guideToEdit?.imageName ?? "",
-            steps: steps.isEmpty ? ["Stay alert and follow official local broadcast orders."] : steps,
-            thingsToDo: dos.isEmpty ? ["Remain calm", "Call emergency services if required"] : dos,
-            thingsToAvoid: donts.isEmpty ? ["Do not panic", "Do not spread rumors"] : donts,
-            keywords: [title.lowercased(), selectedCategoryId],
-            sourceName: sourceName.isEmpty ? "Official Safety Advisory" : sourceName,
-            sourceURL: sourceURL.isEmpty ? "https://www.ready.gov" : sourceURL
-        )
-
-        if isEditing {
-            data.updateGuide(guide)
+        if let existing = alertToEdit {
+            var updated = existing
+            updated.title = title
+            updated.description = description
+            updated.region = selectedRegion
+            updated.categoryId = selectedCategory
+            updated.severity = selectedSeverity
+            updated.isActive = isActive
+            updated.expiresAt = expiresAt
+            disasterService.updateAlert(updated)
         } else {
-            data.addGuide(guide)
-        }
-        dismiss()
-    }
-}
-
-// MARK: - Add / Edit Tip Sheet
-struct AdminEditTipView: View {
-    @EnvironmentObject var data: EmergencyDataService
-    @Environment(\.dismiss) private var dismiss
-
-    let tipToEdit: SafetyTip?
-
-    @State private var tipText = ""
-    @State private var selectedCategoryId = "fire"
-    @State private var iconName = "lightbulb.fill"
-
-    var isEditing: Bool { tipToEdit != nil }
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section("Tip Content") {
-                    TextField("Enter safety tip...", text: $tipText)
-
-                    Picker("Category", selection: $selectedCategoryId) {
-                        ForEach(data.categories) { cat in
-                            Text(cat.title).tag(cat.id)
-                        }
-                    }
-                }
-
-                if isEditing, let t = tipToEdit {
-                    Section {
-                        Button(role: .destructive) {
-                            data.deleteTip(withId: t.id)
-                            dismiss()
-                        } label: {
-                            HStack {
-                                Spacer()
-                                Label("Delete Tip", systemImage: "trash")
-                                Spacer()
-                            }
-                        }
-                    }
-                }
-            }
-            .navigationTitle(isEditing ? "Edit Safety Tip" : "Add Safety Tip")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        saveTip()
-                    }
-                    .fontWeight(.bold)
-                    .disabled(tipText.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
-            }
-            .onAppear {
-                if let tip = tipToEdit {
-                    tipText = tip.text
-                    selectedCategoryId = tip.categoryId
-                    iconName = tip.iconName
-                }
-            }
-        }
-    }
-
-    private func saveTip() {
-        let tipId = tipToEdit?.id ?? UUID().uuidString
-        let tip = SafetyTip(
-            id: tipId,
-            categoryId: selectedCategoryId,
-            text: tipText,
-            iconName: iconName
-        )
-        if isEditing {
-            data.updateTip(tip)
-        } else {
-            data.addTip(tip)
+            let newAlert = DisasterAlert(
+                id: UUID().uuidString,
+                title: title,
+                description: description,
+                region: selectedRegion,
+                categoryId: selectedCategory,
+                severity: selectedSeverity,
+                isActive: isActive,
+                createdAt: Date(),
+                expiresAt: expiresAt,
+                createdBy: auth.userEmail
+            )
+            disasterService.createAlert(newAlert)
         }
         dismiss()
     }

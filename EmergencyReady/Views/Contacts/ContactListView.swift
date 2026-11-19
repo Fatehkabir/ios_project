@@ -1,120 +1,157 @@
 import SwiftUI
 
-// Emergency contacts: view, add, edit (tap a row), delete (swipe), call.
 struct ContactListView: View {
     @EnvironmentObject var firestore: FirestoreService
-    @Environment(\.openURL) private var openURL
 
-    @State private var showForm = false
-    @State private var contactToEdit: EmergencyContact? = nil   // nil = adding a new contact
-    @State private var showCallError = false
+    @State private var showingAddSheet = false
+    @State private var contactToEdit: EmergencyContact? = nil
 
     var body: some View {
-        Group {
-            if firestore.isLoading && firestore.contacts.isEmpty {
-                LoadingView(text: "Loading contacts...")
-            } else if firestore.contacts.isEmpty {
-                ScrollView {
-                    EmptyStateView(icon: "person.crop.circle.badge.plus",
-                                   title: "No emergency contacts yet",
-                                   message: "Add family, friends or doctors you may need to reach quickly.",
-                                   actionTitle: "Add Contact") {
-                        openForm(editing: nil)
+        List {
+            // National Official Helplines (Instant 999 & 1090)
+            Section {
+                ForEach(EmergencyNumbers.nationalList) { item in
+                    HStack(spacing: 12) {
+                        Image(systemName: item.iconName)
+                            .font(.title3)
+                            .foregroundColor(.white)
+                            .padding(8)
+                            .background(Theme.orange)
+                            .clipShape(Circle())
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(item.name)
+                                .font(.headline)
+                                .foregroundColor(Theme.navy)
+                            Text(item.description)
+                                .font(.caption)
+                                .foregroundColor(Theme.textSecondary)
+                        }
+
+                        Spacer()
+
+                        Button {
+                            callNumber(item.number)
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "phone.fill")
+                                Text(item.number)
+                            }
+                            .font(.subheadline.bold())
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(Theme.red)
+                            .cornerRadius(8)
+                        }
+                        .buttonStyle(.plain)
                     }
+                    .padding(.vertical, 2)
                 }
-            } else {
-                List {
+            } header: {
+                Text("National Emergency Helplines")
+            }
+
+            // Personal Emergency Contacts (Family, Doctors, Neighbors)
+            Section {
+                if firestore.contacts.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("No personal contacts added yet")
+                            .font(.subheadline)
+                            .foregroundColor(Theme.textSecondary)
+                        Text("Add trusted relatives, neighbors, or doctors to call quickly during an emergency.")
+                            .font(.caption)
+                            .foregroundColor(Theme.textSecondary)
+                    }
+                    .padding(.vertical, 8)
+                } else {
                     ForEach(firestore.contacts) { contact in
-                        contactRow(contact)
+                        HStack(spacing: 12) {
+                            Image(systemName: "person.crop.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(Theme.navy)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack(spacing: 6) {
+                                    Text(contact.name)
+                                        .font(.headline)
+                                        .foregroundColor(Theme.navy)
+                                    if !contact.relationship.isEmpty {
+                                        Text("(\(contact.relationship))")
+                                            .font(.caption)
+                                            .foregroundColor(Theme.orange)
+                                    }
+                                }
+                                Text(contact.phone)
+                                    .font(.subheadline)
+                                    .foregroundColor(Theme.textSecondary)
+                            }
+
+                            Spacer()
+
+                            // Direct Call Button
+                            Button {
+                                callNumber(contact.phone)
+                            } label: {
+                                Image(systemName: "phone.circle.fill")
+                                    .font(.system(size: 32))
+                                    .foregroundColor(Theme.green)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Call \(contact.name)")
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            contactToEdit = contact
+                        }
                     }
-                    .onDelete(perform: deleteContacts)   // swipe left to delete
+                    .onDelete { indexSet in
+                        for index in indexSet {
+                            firestore.deleteContact(id: firestore.contacts[index].id)
+                        }
+                    }
                 }
-                .scrollContentBackground(.hidden)
+            } header: {
+                HStack {
+                    Text("My Emergency Contacts (\(firestore.contacts.count))")
+                    Spacer()
+                    Text("Tap to edit • Swipe to delete")
+                        .font(.caption2)
+                        .foregroundColor(Theme.textSecondary)
+                }
             }
         }
-        .background(Theme.background.ignoresSafeArea())
         .navigationTitle("Emergency Contacts")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    openForm(editing: nil)
+                    showingAddSheet = true
                 } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .foregroundColor(Theme.orange)
-                }
-                .accessibilityLabel("Add contact")
-            }
-        }
-        // $showForm is a Binding: the form can close itself by setting it to false.
-        .sheet(isPresented: $showForm) {
-            ContactFormView(contactToEdit: contactToEdit, isPresented: $showForm)
-        }
-        .alert("Cannot place call", isPresented: $showCallError) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text("This device cannot make phone calls. The iOS Simulator cannot call, so please test on a real iPhone.")
-        }
-    }
-
-    // MARK: - Row
-
-    private func contactRow(_ contact: EmergencyContact) -> some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(contact.name)
-                    .font(.headline)
-                    .foregroundColor(Theme.navy)
-                Text(contact.relationship)
-                    .font(.caption.weight(.semibold))
+                    HStack(spacing: 4) {
+                        Image(systemName: "plus.circle.fill")
+                        Text("Add")
+                    }
+                    .fontWeight(.bold)
                     .foregroundColor(Theme.orange)
-                Text(contact.phone)
-                    .font(.subheadline)
-                    .foregroundColor(Theme.textSecondary)
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                openForm(editing: contact)   // tap the text to edit
-            }
-
-            // The call button. .borderless keeps it separate from the row's tap.
-            Button {
-                call(contact)
-            } label: {
-                Image(systemName: "phone.fill")
-                    .foregroundColor(.white)
-                    .frame(width: 42, height: 42)
-                    .background(Theme.green)
-                    .clipShape(Circle())
-            }
-            .buttonStyle(.borderless)
-            .accessibilityLabel("Call \(contact.name)")
         }
-        .padding(.vertical, 4)
-    }
-
-    // MARK: - Actions
-
-    private func openForm(editing contact: EmergencyContact?) {
-        contactToEdit = contact
-        showForm = true
-    }
-
-    private func deleteContacts(at offsets: IndexSet) {
-        for index in offsets {
-            firestore.deleteContact(firestore.contacts[index])
+        .sheet(isPresented: $showingAddSheet) {
+            ContactFormView(contactToEdit: nil)
+        }
+        .sheet(item: $contactToEdit) { contact in
+            ContactFormView(contactToEdit: contact)
         }
     }
 
-    // Opens the phone app using the "tel://" URL scheme.
-    private func call(_ contact: EmergencyContact) {
-        let number = Validation.cleanedPhone(contact.phone)
-        guard let url = URL(string: "tel://\(number)") else {
-            showCallError = true
-            return
-        }
-        openURL(url) { accepted in
-            if !accepted { showCallError = true }
+    private func callNumber(_ raw: String) {
+        let clean = raw.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+        if let url = URL(string: "tel://\(clean)") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            } else {
+                print("Direct calling simulated: tel://\(clean)")
+            }
         }
     }
 }

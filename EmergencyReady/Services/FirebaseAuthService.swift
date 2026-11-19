@@ -1,37 +1,45 @@
 import Foundation
 import FirebaseAuth
+import FirebaseFirestore
+import Combine
 
-// Handles registration, login and logout with Firebase Authentication.
 class FirebaseAuthService: ObservableObject {
-    // nil means "nobody is logged in". RootView watches this value.
+
     @Published var currentUser: User? = nil
-    @Published var isWorking = false            // true while a request is running
+    @Published var userRegion: String = "Dhaka"
+    @Published var emergencyNumber: String = "999"
+    @Published var isWorking: Bool = false
     @Published var errorMessage: String? = nil
 
-    private var listenerHandle: AuthStateDidChangeListenerHandle?
+    private var handle: AuthStateDidChangeListenerHandle?
+    private var db: Firestore { Firestore.firestore() }
 
     init() {
         #if targetEnvironment(simulator)
-        do {
-            try Auth.auth().useUserAccessGroup(nil)
-        } catch {
-            print("Simulator keychain access group note: \(error)")
-        }
+        try? Auth.auth().useUserAccessGroup(nil)
         #endif
 
-        // Firebase tells us whenever the login state changes (login, logout, app restart).
-        listenerHandle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
-            self?.currentUser = user
+        // Load cached preferences
+        self.userRegion = UserDefaults.standard.string(forKey: "user_selected_region") ?? "Dhaka"
+        self.emergencyNumber = UserDefaults.standard.string(forKey: "user_emergency_number") ?? "999"
+
+        handle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            DispatchQueue.main.async {
+                self?.currentUser = user
+                if let uid = user?.uid {
+                    self?.fetchUserProfile(uid: uid)
+                }
+            }
         }
     }
 
     deinit {
-        if let handle = listenerHandle {
+        if let handle = handle {
             Auth.auth().removeStateDidChangeListener(handle)
         }
     }
 
-    // Convenience: the unique id used as the Firestore document name for this user.
+    var isAuthenticated: Bool { currentUser != nil }
     var userId: String? { currentUser?.uid }
     var userEmail: String { currentUser?.email ?? "" }
 
@@ -41,63 +49,94 @@ class FirebaseAuthService: ObservableObject {
         return email.contains("admin") || email.hasPrefix("admin@") || email == "admin@emergencyready.app"
     }
 
-    // MARK: - Register
-    func register(email: String, password: String) {
-        errorMessage = nil
+    // MARK: - Auth Actions
+
+    func register(email: String, password: String, region: String, emergencyNumber: String) {
         isWorking = true
-        Auth.auth().createUser(withEmail: email, password: password) { [weak self] _, error in
+        errorMessage = nil
+
+        Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
             DispatchQueue.main.async {
                 self?.isWorking = false
                 if let error = error {
-                    self?.errorMessage = FirebaseAuthService.friendlyMessage(for: error)
+                    self?.errorMessage = error.localizedDescription
+                } else if let user = result?.user {
+                    self?.saveUserProfile(uid: user.uid, region: region, emergencyNumber: emergencyNumber)
                 }
             }
         }
     }
 
-    // MARK: - Login
     func login(email: String, password: String) {
-        errorMessage = nil
         isWorking = true
-        Auth.auth().signIn(withEmail: email, password: password) { [weak self] _, error in
+        errorMessage = nil
+
+        Auth.auth().signIn(withEmail: email, password: password) { [weak self] result, error in
             DispatchQueue.main.async {
                 self?.isWorking = false
                 if let error = error {
-                    self?.errorMessage = FirebaseAuthService.friendlyMessage(for: error)
+                    self?.errorMessage = error.localizedDescription
+                } else if let user = result?.user {
+                    self?.fetchUserProfile(uid: user.uid)
                 }
             }
         }
     }
 
-    // MARK: - Logout
     func logout() {
         do {
             try Auth.auth().signOut()
+            currentUser = nil
         } catch {
-            errorMessage = "Could not log out. Please try again."
+            errorMessage = error.localizedDescription
         }
     }
 
-    // Turns Firebase's technical errors into messages a normal user understands.
-    // We compare against Firebase's numeric error codes. These numbers are stable
-    // across Firebase SDK versions (the enum names changed between versions).
-    static func friendlyMessage(for error: Error) -> String {
-        let nsError = error as NSError
-        switch nsError.code {
-        case 17008:                 // invalid email
-            return "That email address is not valid."
-        case 17007:                 // email already in use
-            return "An account with this email already exists."
-        case 17026:                 // weak password
-            return "Password is too weak. Use at least 6 characters."
-        case 17009, 17004, 17011:   // wrong password / invalid credential / user not found
-            return "Incorrect email or password."
-        case 17020:                 // network error
-            return "Network error. Check your internet connection."
-        case 17010:                 // too many requests
-            return "Too many attempts. Please wait and try again."
-        default:
-            return error.localizedDescription
+    // MARK: - User Profile in Firestore & Local Preferences
+
+    func updateEmergencyNumber(_ number: String) {
+        self.emergencyNumber = number
+        UserDefaults.standard.set(number, forKey: "user_emergency_number")
+        if let uid = userId {
+            db.collection("users").document(uid).setData(["emergencyNumber": number], merge: true)
+        }
+    }
+
+    func updateRegion(_ region: String) {
+        self.userRegion = region
+        UserDefaults.standard.set(region, forKey: "user_selected_region")
+        if let uid = userId {
+            db.collection("users").document(uid).setData(["region": region], merge: true)
+        }
+    }
+
+    private func saveUserProfile(uid: String, region: String, emergencyNumber: String) {
+        self.userRegion = region
+        self.emergencyNumber = emergencyNumber
+        UserDefaults.standard.set(region, forKey: "user_selected_region")
+        UserDefaults.standard.set(emergencyNumber, forKey: "user_emergency_number")
+
+        db.collection("users").document(uid).setData([
+            "region": region,
+            "emergencyNumber": emergencyNumber,
+            "email": currentUser?.email ?? "",
+            "createdAt": Timestamp(date: Date())
+        ], merge: true)
+    }
+
+    private func fetchUserProfile(uid: String) {
+        db.collection("users").document(uid).getDocument { [weak self] snapshot, _ in
+            guard let data = snapshot?.data() else { return }
+            DispatchQueue.main.async {
+                if let reg = data["region"] as? String, !reg.isEmpty {
+                    self?.userRegion = reg
+                    UserDefaults.standard.set(reg, forKey: "user_selected_region")
+                }
+                if let num = data["emergencyNumber"] as? String, !num.isEmpty {
+                    self?.emergencyNumber = num
+                    UserDefaults.standard.set(num, forKey: "user_emergency_number")
+                }
+            }
         }
     }
 }

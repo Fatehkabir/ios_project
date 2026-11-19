@@ -4,21 +4,11 @@ import UIKit
 // Full instructions for one guide: illustration, numbered steps, do / avoid lists, source.
 struct GuideDetailView: View {
     @EnvironmentObject var data: EmergencyDataService
-    @EnvironmentObject var firestore: FirestoreService
 
     let guide: EmergencyGuide
 
     private var accentColor: Color {
         data.color(forCategory: guide.categoryId)
-    }
-
-    // A Binding built by hand: READ from Firestore's favourites, WRITE back to Firestore.
-    // FavoriteButton only sees a simple true/false Binding.
-    private var favoriteBinding: Binding<Bool> {
-        Binding(
-            get: { firestore.isFavorite(guide.id) },
-            set: { newValue in firestore.setFavorite(guideId: guide.id, isFavorite: newValue) }
-        )
     }
 
     var body: some View {
@@ -53,13 +43,8 @@ struct GuideDetailView: View {
             .padding()
         }
         .background(Theme.background.ignoresSafeArea())
-        .navigationTitle("Guide")
+        .navigationTitle("Emergency Guide")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                FavoriteButton(isFavorite: favoriteBinding)
-            }
-        }
     }
 
     // MARK: - Pieces
@@ -138,7 +123,7 @@ struct GuideDetailView: View {
 
     private var sourceSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Source")
+            Text("Official Source")
                 .font(.subheadline.bold())
                 .foregroundColor(Theme.navy)
 
@@ -154,7 +139,7 @@ struct GuideDetailView: View {
                     .foregroundColor(Theme.textSecondary)
             }
 
-            Text("This guide is general information only. It does not replace first aid training, medical advice or emergency services. In an emergency, call your local emergency number.")
+            Text("This guide is general information for emergency response. Call your local emergency number (999) if life is in danger.")
                 .font(.caption)
                 .foregroundColor(Theme.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)

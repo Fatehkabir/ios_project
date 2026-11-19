@@ -1,4 +1,4 @@
-// !$*UTF8*$!
+﻿// !$*UTF8*$!
 {
 	archiveVersion = 1;
 	classes = {
@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		AA0001000000000000000001 /* EmergencyReadyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000001 /* EmergencyReadyApp.swift */; };
 		AA0001000000000000000002 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000002 /* Theme.swift */; };
+		AA0001000000000000000050 /* DisasterAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000050 /* DisasterAlert.swift */; };
 		AA0001000000000000000003 /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000003 /* ChecklistItem.swift */; };
 		AA0001000000000000000004 /* EmergencyCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000004 /* EmergencyCategory.swift */; };
 		AA0001000000000000000005 /* EmergencyContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000005 /* EmergencyContact.swift */; };
@@ -26,7 +27,7 @@
 		AA0001000000000000000017 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000017 /* RegisterView.swift */; };
 		AA0001000000000000000018 /* ChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000018 /* ChecklistView.swift */; };
 		AA0001000000000000000019 /* CategoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000019 /* CategoryCard.swift */; };
-		AA0001000000000000000020 /* FavoriteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000020 /* FavoriteButton.swift */; };
+		AA0001000000000000000020 /* SOSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000020 /* SOSButton.swift */; };
 		AA0001000000000000000021 /* FormFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000021 /* FormFields.swift */; };
 		AA0001000000000000000022 /* GuideCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000022 /* GuideCard.swift */; };
 		AA0001000000000000000023 /* IconBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000023 /* IconBadge.swift */; };
@@ -37,12 +38,12 @@
 		AA0001000000000000000028 /* CategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000028 /* CategoryView.swift */; };
 		AA0001000000000000000029 /* GuideDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000029 /* GuideDetailView.swift */; };
 		AA0001000000000000000030 /* GuideListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000030 /* GuideListView.swift */; };
-		AA0001000000000000000031 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000031 /* FavoritesView.swift */; };
+		AA0001000000000000000031 /* RegionalAlertBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000031 /* RegionalAlertBanner.swift */; };
 		AA0001000000000000000032 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000032 /* HomeView.swift */; };
 		AA0001000000000000000033 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000033 /* SearchView.swift */; };
 		AA0001000000000000000034 /* SafetyTipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000034 /* SafetyTipsView.swift */; };
-		AA0001000000000000000040 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000040 /* LocationService.swift */; };
-		AA0001000000000000000041 /* WeatherAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000041 /* WeatherAlertService.swift */; };
+		AA0001000000000000000040 /* ChecklistService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000040 /* ChecklistService.swift */; };
+		AA0001000000000000000041 /* DisasterAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000041 /* DisasterAlertService.swift */; };
 		AA0001000000000000000042 /* AdminDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000042 /* AdminDashboardView.swift */; };
 		AA0001000000000000000035 /* EmergencyData.json in Resources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000035 /* EmergencyData.json */; };
 		AA0001000000000000000036 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB0001000000000000000036 /* Assets.xcassets */; };
@@ -54,6 +55,7 @@
 /* Begin PBXFileReference section */
 		BB0001000000000000000001 /* EmergencyReadyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyReadyApp.swift; sourceTree = "<group>"; };
 		BB0001000000000000000002 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		BB0001000000000000000050 /* DisasterAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisasterAlert.swift; sourceTree = "<group>"; };
 		BB0001000000000000000003 /* ChecklistItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistItem.swift; sourceTree = "<group>"; };
 		BB0001000000000000000004 /* EmergencyCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyCategory.swift; sourceTree = "<group>"; };
 		BB0001000000000000000005 /* EmergencyContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyContact.swift; sourceTree = "<group>"; };
@@ -71,7 +73,7 @@
 		BB0001000000000000000017 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		BB0001000000000000000018 /* ChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistView.swift; sourceTree = "<group>"; };
 		BB0001000000000000000019 /* CategoryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCard.swift; sourceTree = "<group>"; };
-		BB0001000000000000000020 /* FavoriteButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteButton.swift; sourceTree = "<group>"; };
+		BB0001000000000000000020 /* SOSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOSButton.swift; sourceTree = "<group>"; };
 		BB0001000000000000000021 /* FormFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormFields.swift; sourceTree = "<group>"; };
 		BB0001000000000000000022 /* GuideCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideCard.swift; sourceTree = "<group>"; };
 		BB0001000000000000000023 /* IconBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconBadge.swift; sourceTree = "<group>"; };
@@ -82,7 +84,7 @@
 		BB0001000000000000000028 /* CategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryView.swift; sourceTree = "<group>"; };
 		BB0001000000000000000029 /* GuideDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideDetailView.swift; sourceTree = "<group>"; };
 		BB0001000000000000000030 /* GuideListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideListView.swift; sourceTree = "<group>"; };
-		BB0001000000000000000031 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
+		BB0001000000000000000031 /* RegionalAlertBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionalAlertBanner.swift; sourceTree = "<group>"; };
 		BB0001000000000000000032 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		BB0001000000000000000033 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		BB0001000000000000000034 /* SafetyTipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyTipsView.swift; sourceTree = "<group>"; };
@@ -91,8 +93,8 @@
 		BB0001000000000000000037 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BB0001000000000000000038 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BB0001000000000000000039 /* EmergencyReady.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EmergencyReady.entitlements; sourceTree = "<group>"; };
-		BB0001000000000000000040 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
-		BB0001000000000000000041 /* WeatherAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherAlertService.swift; sourceTree = "<group>"; };
+		BB0001000000000000000040 /* ChecklistService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistService.swift; sourceTree = "<group>"; };
+		BB0001000000000000000041 /* DisasterAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisasterAlertService.swift; sourceTree = "<group>"; };
 		BB0001000000000000000042 /* AdminDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDashboardView.swift; sourceTree = "<group>"; };
 		DD0001000000000000000001 /* EmergencyReady.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmergencyReady.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -130,6 +132,7 @@
 		FF0001000000000000000002 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BB0001000000000000000050 /* DisasterAlert.swift */,
 				BB0001000000000000000003 /* ChecklistItem.swift */,
 				BB0001000000000000000004 /* EmergencyCategory.swift */,
 				BB0001000000000000000005 /* EmergencyContact.swift */,
@@ -147,8 +150,8 @@
 				BB0001000000000000000010 /* FirebaseAuthService.swift */,
 				BB0001000000000000000011 /* FirestoreService.swift */,
 				BB0001000000000000000012 /* Validation.swift */,
-				BB0001000000000000000040 /* LocationService.swift */,
-				BB0001000000000000000041 /* WeatherAlertService.swift */,
+				BB0001000000000000000040 /* ChecklistService.swift */,
+				BB0001000000000000000041 /* DisasterAlertService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -201,7 +204,7 @@
 			isa = PBXGroup;
 			children = (
 				BB0001000000000000000019 /* CategoryCard.swift */,
-				BB0001000000000000000020 /* FavoriteButton.swift */,
+				BB0001000000000000000020 /* SOSButton.swift */,
 				BB0001000000000000000021 /* FormFields.swift */,
 				BB0001000000000000000022 /* GuideCard.swift */,
 				BB0001000000000000000023 /* IconBadge.swift */,
@@ -234,9 +237,9 @@
 		FF0001000000000000000011 /* Favorites */ = {
 			isa = PBXGroup;
 			children = (
-				BB0001000000000000000031 /* FavoritesView.swift */,
+				BB0001000000000000000031 /* RegionalAlertBanner.swift */,
 			);
-			path = Favorites;
+			path = Components;
 			sourceTree = "<group>";
 		};
 		FF0001000000000000000012 /* Home */ = {
@@ -359,6 +362,7 @@
 			files = (
 				AA0001000000000000000001 /* EmergencyReadyApp.swift in Sources */,
 				AA0001000000000000000002 /* Theme.swift in Sources */,
+				AA0001000000000000000050 /* DisasterAlert.swift in Sources */,
 				AA0001000000000000000003 /* ChecklistItem.swift in Sources */,
 				AA0001000000000000000004 /* EmergencyCategory.swift in Sources */,
 				AA0001000000000000000005 /* EmergencyContact.swift in Sources */,
@@ -376,7 +380,7 @@
 				AA0001000000000000000017 /* RegisterView.swift in Sources */,
 				AA0001000000000000000018 /* ChecklistView.swift in Sources */,
 				AA0001000000000000000019 /* CategoryCard.swift in Sources */,
-				AA0001000000000000000020 /* FavoriteButton.swift in Sources */,
+				AA0001000000000000000020 /* SOSButton.swift in Sources */,
 				AA0001000000000000000021 /* FormFields.swift in Sources */,
 				AA0001000000000000000022 /* GuideCard.swift in Sources */,
 				AA0001000000000000000023 /* IconBadge.swift in Sources */,
@@ -387,12 +391,12 @@
 				AA0001000000000000000028 /* CategoryView.swift in Sources */,
 				AA0001000000000000000029 /* GuideDetailView.swift in Sources */,
 				AA0001000000000000000030 /* GuideListView.swift in Sources */,
-				AA0001000000000000000031 /* FavoritesView.swift in Sources */,
+				AA0001000000000000000031 /* RegionalAlertBanner.swift in Sources */,
 				AA0001000000000000000032 /* HomeView.swift in Sources */,
 				AA0001000000000000000033 /* SearchView.swift in Sources */,
 				AA0001000000000000000034 /* SafetyTipsView.swift in Sources */,
-				AA0001000000000000000040 /* LocationService.swift in Sources */,
-				AA0001000000000000000041 /* WeatherAlertService.swift in Sources */,
+				AA0001000000000000000040 /* ChecklistService.swift in Sources */,
+				AA0001000000000000000041 /* DisasterAlertService.swift in Sources */,
 				AA0001000000000000000042 /* AdminDashboardView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -630,3 +634,4 @@
 	};
 	rootObject = PP0001000000000000000001 /* Project object */;
 }
+
