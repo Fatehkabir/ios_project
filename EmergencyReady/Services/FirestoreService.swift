@@ -33,7 +33,6 @@ class FirestoreService: ObservableObject {
 
                 if let error = error {
                     print("Firestore contacts offline/error: \(error.localizedDescription)")
-                    // Keep existing cached contacts
                     return
                 }
 
@@ -43,13 +42,13 @@ class FirestoreService: ObservableObject {
                     let name = data["name"] as? String ?? ""
                     let phone = data["phone"] as? String ?? ""
                     let relationship = data["relationship"] as? String ?? ""
-                    let timestamp = data["createdAt"] as? Timestamp ?? Timestamp(date: Date())
+                    let createdTime = data["createdAt"] as? Double ?? (data["createdAt"] as? Timestamp)?.dateValue().timeIntervalSince1970 ?? Date().timeIntervalSince1970
                     return EmergencyContact(
                         id: doc.documentID,
                         name: name,
                         phone: phone,
                         relationship: relationship,
-                        createdAt: timestamp.dateValue()
+                        createdAt: createdTime
                     )
                 }
 
@@ -69,12 +68,12 @@ class FirestoreService: ObservableObject {
 
     func addContact(name: String, phone: String, relationship: String) {
         guard let userId = userId else { return }
-        let newContact = [
+        let newContact: [String: Any] = [
             "name": name,
             "phone": phone,
             "relationship": relationship,
-            "createdAt": Timestamp(date: Date())
-        ] as [String : Any]
+            "createdAt": Date().timeIntervalSince1970
+        ]
 
         db.collection("users").document(userId).collection("contacts").addDocument(data: newContact) { [weak self] error in
             if let error = error { self?.show(error) }
