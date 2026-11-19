@@ -1,34 +1,21 @@
 import SwiftUI
 
-// One form used for BOTH "Add contact" and "Edit contact".
-// contactToEdit == nil  -> add mode.   contactToEdit != nil -> edit mode.
 struct ContactFormView: View {
     @EnvironmentObject var firestore: FirestoreService
+    @Environment(\.dismiss) private var dismiss
 
     let contactToEdit: EmergencyContact?
 
-    // Binding to the parent's showForm. Setting it to false closes this sheet.
-    @Binding var isPresented: Bool
-
-    @State private var name: String
-    @State private var phone: String
-    @State private var relationship: String
-    @State private var didTrySave = false   // errors only appear after the first Save tap
+    @State private var name: String = ""
+    @State private var phone: String = ""
+    @State private var relationship: String = ""
+    @State private var didTrySave = false
 
     private let relationshipSuggestions = [
         "Family", "Friend", "Doctor", "Neighbour", "Colleague", "Police", "Ambulance", "Fire Service"
     ]
 
-    // Fill the fields with the existing contact's values (or empty strings when adding).
-    init(contactToEdit: EmergencyContact?, isPresented: Binding<Bool>) {
-        self.contactToEdit = contactToEdit
-        self._isPresented = isPresented
-        _name = State(initialValue: contactToEdit?.name ?? "")
-        _phone = State(initialValue: contactToEdit?.phone ?? "")
-        _relationship = State(initialValue: contactToEdit?.relationship ?? "")
-    }
-
-    // MARK: - Validation messages (nil = field is fine)
+    var isEditing: Bool { contactToEdit != nil }
 
     private var nameError: String? {
         guard didTrySave else { return nil }
@@ -74,7 +61,6 @@ struct ContactFormView: View {
                     TextField("e.g. Family, Doctor", text: $relationship)
                         .textInputAutocapitalization(.words)
 
-                    // Quick-pick buttons: tapping one fills the text field above.
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(relationshipSuggestions, id: \.self) { suggestion in
@@ -100,16 +86,38 @@ struct ContactFormView: View {
                         Text(relationshipError).foregroundColor(Theme.red)
                     }
                 }
+
+                if isEditing, let contact = contactToEdit {
+                    Section {
+                        Button(role: .destructive) {
+                            firestore.deleteContact(id: contact.id)
+                            dismiss()
+                        } label: {
+                            HStack {
+                                Spacer()
+                                Label("Delete Contact", systemImage: "trash")
+                                Spacer()
+                            }
+                        }
+                    }
+                }
             }
-            .navigationTitle(contactToEdit == nil ? "Add Contact" : "Edit Contact")
+            .navigationTitle(isEditing ? "Edit Contact" : "Add Contact")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { isPresented = false }
+                    Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") { save() }
                         .fontWeight(.semibold)
+                }
+            }
+            .onAppear {
+                if let contact = contactToEdit {
+                    name = contact.name
+                    phone = contact.phone
+                    relationship = contact.relationship
                 }
             }
         }
@@ -118,26 +126,17 @@ struct ContactFormView: View {
     private func save() {
         didTrySave = true
 
-        // Stop here if anything is wrong: the red messages are now visible.
         if nameError != nil || phoneError != nil || relationshipError != nil { return }
 
         let cleanName = name.trimmingCharacters(in: .whitespaces)
         let cleanPhone = phone.trimmingCharacters(in: .whitespaces)
         let cleanRelationship = relationship.trimmingCharacters(in: .whitespaces)
 
-        if var existing = contactToEdit {
-            // UPDATE an existing contact
-            existing.name = cleanName
-            existing.phone = cleanPhone
-            existing.relationship = cleanRelationship
-            firestore.updateContact(existing)
+        if let existing = contactToEdit {
+            firestore.updateContact(id: existing.id, name: cleanName, phone: cleanPhone, relationship: cleanRelationship)
         } else {
-            // CREATE a new contact
-            let newContact = EmergencyContact(name: cleanName,
-                                              phone: cleanPhone,
-                                              relationship: cleanRelationship)
-            firestore.addContact(newContact)
+            firestore.addContact(name: cleanName, phone: cleanPhone, relationship: cleanRelationship)
         }
-        isPresented = false   // close the sheet
+        dismiss()
     }
 }
