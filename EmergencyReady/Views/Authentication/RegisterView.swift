@@ -5,6 +5,7 @@ struct RegisterView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var email = ""
+    @State private var username = ""
     @State private var password = ""
     @State private var confirmPassword = ""
     @State private var selectedRegion = "Dhaka"
@@ -22,7 +23,7 @@ struct RegisterView: View {
                     Text("Create Account")
                         .font(.title2.bold())
                         .foregroundColor(Theme.navy)
-                    Text("Select your region to receive local disaster alerts")
+                    Text("Register your profile and region for local disaster alerts")
                         .font(.footnote)
                         .foregroundColor(Theme.textSecondary)
                         .multilineTextAlignment(.center)
@@ -30,6 +31,14 @@ struct RegisterView: View {
                 .padding(.top, 24)
 
                 VStack(spacing: 16) {
+                    ValidatedField(
+                        title: "Full Name / Username",
+                        placeholder: "e.g. Kabir Ahmed",
+                        text: $username,
+                        keyboard: .default,
+                        capitalization: .words
+                    )
+
                     ValidatedField(
                         title: "Email Address",
                         placeholder: "user@example.com",
@@ -129,9 +138,12 @@ struct RegisterView: View {
 
     private func register() {
         let cleanEmail = email.trimmingCharacters(in: .whitespaces)
+        let cleanName = username.trimmingCharacters(in: .whitespaces)
         validationMessage = nil
 
-        if !Validation.isValidEmail(cleanEmail) {
+        if cleanName.isEmpty {
+            validationMessage = "Please enter your name or username."
+        } else if !Validation.isValidEmail(cleanEmail) {
             validationMessage = "Please enter a valid email address."
         } else if password.count < 6 {
             validationMessage = "Password must be at least 6 characters."
@@ -141,6 +153,7 @@ struct RegisterView: View {
             auth.register(
                 email: cleanEmail,
                 password: password,
+                username: cleanName,
                 region: selectedRegion,
                 emergencyNumber: selectedEmergencyNumber
             )

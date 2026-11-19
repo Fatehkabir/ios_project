@@ -11,13 +11,7 @@ struct HomeView: View {
     @State private var showLogoutConfirmation = false
     @State private var showAdminPanel = false
     @State private var showRegionSheet = false
-
-    private var displayName: String {
-        if let name = auth.userEmail.split(separator: "@").first, !name.isEmpty {
-            return String(name)
-        }
-        return "there"
-    }
+    @State private var showProfileSheet = false
 
     private var dailyTip: SafetyTip? {
         if data.tips.isEmpty { return nil }
@@ -76,6 +70,9 @@ struct HomeView: View {
         .sheet(isPresented: $showRegionSheet) {
             RegionSettingsSheet()
         }
+        .sheet(isPresented: $showProfileSheet) {
+            ProfileView()
+        }
     }
 
     // MARK: - Header
@@ -85,7 +82,7 @@ struct HomeView: View {
                 Text("Hello,")
                     .font(.subheadline)
                     .foregroundColor(.white.opacity(0.8))
-                Text(displayName)
+                Text(auth.displayName)
                     .font(.title2.bold())
                     .foregroundColor(.white)
 
@@ -110,11 +107,19 @@ struct HomeView: View {
 
             Menu {
                 Text(auth.userEmail)
+
+                Button {
+                    showProfileSheet = true
+                } label: {
+                    Label("My Profile & Security", systemImage: "person.text.rectangle")
+                }
+
                 Button {
                     showRegionSheet = true
                 } label: {
                     Label("Change Region / SOS Number", systemImage: "gearshape")
                 }
+
                 if auth.isAdmin {
                     Button {
                         showAdminPanel = true
@@ -122,15 +127,27 @@ struct HomeView: View {
                         Label("Admin Disaster Manager", systemImage: "lock.shield.fill")
                     }
                 }
+
                 Button(role: .destructive) {
                     showLogoutConfirmation = true
                 } label: {
                     Label("Log Out", systemImage: "rectangle.portrait.and.arrow.right")
                 }
             } label: {
-                Image(systemName: "person.crop.circle.fill")
-                    .font(.system(size: 34))
-                    .foregroundColor(.white)
+                if !auth.profileImageBase64.isEmpty,
+                   let data = Data(base64Encoded: auth.profileImageBase64),
+                   let uiImage = UIImage(data: data) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 38, height: 38)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Theme.orange, lineWidth: 1.5))
+                } else {
+                    Image(systemName: "person.crop.circle.fill")
+                        .font(.system(size: 36))
+                        .foregroundColor(.white)
+                }
             }
             .accessibilityLabel("Account menu")
         }
